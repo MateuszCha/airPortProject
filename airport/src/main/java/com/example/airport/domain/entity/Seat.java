@@ -133,12 +133,11 @@ public class Seat {
                 Objects.equals(column, seat.column) &&
                 categoryType == seat.categoryType &&
                 position == seat.position &&
-                Objects.equals(enable, seat.enable) &&
-                Objects.equals(plane, seat.plane);
+                Objects.equals(enable, seat.enable);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, row, column, categoryType, position, enable, plane);
+        return Objects.hash(id, row, column, categoryType, position, enable);
     }
 }
