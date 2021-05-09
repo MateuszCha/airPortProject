@@ -137,9 +137,8 @@ public class FlightScheduleDto {
             this.description = description;
             return this;
         }
-        public FlightScheduleDtoBuilder withDestination(String destination)
-        {
-            this.description = destination;
+        public FlightScheduleDtoBuilder withDestination(String destination) {
+            this.destination = destination;
             return this;
         }
         public FlightScheduleDtoBuilder withFlyType(FlyType flyType){

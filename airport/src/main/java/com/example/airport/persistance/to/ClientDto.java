@@ -1,11 +1,7 @@
 package com.example.airport.persistance.to;
 
-import com.example.airport.domain.entity.Booked;
 import com.example.airport.domain.enumeration.DocumentType;
-
-import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 public class ClientDto {
     private Long id;
@@ -15,7 +11,6 @@ public class ClientDto {
     private String email;
     private String idNumber;
     private DocumentType documentType;
-    //private Set<Booked> bookedSet;
 
     public ClientDto() {
     }

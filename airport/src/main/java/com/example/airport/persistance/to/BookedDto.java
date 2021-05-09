@@ -1,6 +1,5 @@
 package com.example.airport.persistance.to;
 
-import com.example.airport.domain.entity.Booked;
 import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.SoldType;
 
@@ -14,8 +13,6 @@ public class BookedDto {
     private SoldType soldType;
     private BookedState bookedState;
     private LocalDateTime buyingDate;
-    //private Client client; to
-   // private Seat seat; to
 
     public BookedDto() {
     }

@@ -1,6 +1,5 @@
 package com.example.airport.persistance.to;
 
-import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.enumeration.CategoryType;
 import com.example.airport.domain.enumeration.SeatPosition;
 
