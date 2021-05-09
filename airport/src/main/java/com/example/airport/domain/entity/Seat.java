@@ -20,7 +20,7 @@ public class Seat {
     @Column(name = "column_number",nullable = false)
     private Integer column;
 
-    @Column(name = "category_type",nullable = false,columnDefinition = "enum('BUSINESS','ECONOMIC','PREMIUM','OTHER'")
+    @Column(name = "category_type",nullable = false,columnDefinition = "enum('BUSINESS','ECONOMIC','PREMIUM','OTHER')")
     @Enumerated(value = EnumType.STRING)
     private CategoryType categoryType;
 
