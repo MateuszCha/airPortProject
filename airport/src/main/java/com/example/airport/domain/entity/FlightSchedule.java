@@ -4,7 +4,6 @@ import com.example.airport.domain.enumeration.FlyType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -34,13 +33,13 @@ public class FlightSchedule {
     @Enumerated(EnumType.STRING)
     private FlyType flyType;
 
-    @OneToMany(mappedBy = "flightSchedule",fetch = FetchType.EAGER)
-    private List<Plane> planes;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Plane plane;
 
     public FlightSchedule() {
     }
 
-    public FlightSchedule(Long id, String name, LocalDateTime startTime, LocalDateTime arrive, String description, String destination, FlyType flyType, List<Plane> planes) {
+    public FlightSchedule(Long id, String name, LocalDateTime startTime, LocalDateTime arrive, String description, String destination, FlyType flyType, Plane plane) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
@@ -48,7 +47,7 @@ public class FlightSchedule {
         this.description = description;
         this.destination = destination;
         this.flyType = flyType;
-        this.planes = planes;
+        this.plane = plane;
     }
 
     public Long getId() {
@@ -107,12 +106,12 @@ public class FlightSchedule {
         this.flyType = flyType;
     }
 
-    public List<Plane> getPlanes() {
-        return planes;
+    public Plane getPlane() {
+        return plane;
     }
 
-    public void setPlanes(List<Plane> planes) {
-        this.planes = planes;
+    public void setPlane(Plane plane) {
+        this.plane = plane;
     }
 
     @Override

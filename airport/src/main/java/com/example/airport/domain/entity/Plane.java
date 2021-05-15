@@ -1,6 +1,5 @@
 package com.example.airport.domain.entity;
 
-import com.sun.xml.bind.v2.TODO;
 
 import javax.persistence.*;
 import java.util.List;
@@ -22,21 +21,22 @@ public class Plane {
     @OneToMany(mappedBy = "plane",orphanRemoval = true,cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
     private List<Seat> seats;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private FlightSchedule flightSchedule;
+    @OneToMany(mappedBy = "plane",fetch = FetchType.EAGER)
+    private List<FlightSchedule> flightSchedules;
 
 //////CONSTRUCTOR
     public Plane() {
     }
 
-    public Plane(Long id, String serialNumber, String nameCarrier, List<Seat> seats, FlightSchedule flightSchedule) {
+    public Plane(Long id, String serialNumber, String nameCarrier, List<Seat> seats, List<FlightSchedule> flightSchedules) {
         this.id = id;
         this.serialNumber = serialNumber;
         this.nameCarrier = nameCarrier;
         this.seats = seats;
-        this.flightSchedule = flightSchedule;
+        this.flightSchedules = flightSchedules;
     }
-//////OWN METHODS
+
+    //////OWN METHODS
     public void add(){
         //TODO
 
@@ -78,14 +78,16 @@ public class Plane {
         this.seats = seats;
     }
 
-    public FlightSchedule getFlightSchedule() {
-        return flightSchedule;
+
+    public List<FlightSchedule> getFlightSchedules() {
+        return flightSchedules;
     }
 
-    public void setFlightSchedule(FlightSchedule flightSchedule) {
-        this.flightSchedule = flightSchedule;
+    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
+        this.flightSchedules = flightSchedules;
     }
-///////OVERRIDE METHOD
+
+    //////OVERRIDE METHOD
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
