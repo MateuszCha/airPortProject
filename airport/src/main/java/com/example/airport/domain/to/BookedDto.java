@@ -104,6 +104,7 @@ public class BookedDto {
         private LocalDateTime buyingDate;
 
         public BookedDtoBuilder() {
+            //default const...
         }
         public BookedDtoBuilder withId(Long id){
             this.id  = id;
