@@ -1,7 +1,7 @@
 package com.example.airport.persistance.mapper;
 
 import com.example.airport.domain.entity.Plane;
-import com.example.airport.persistance.to.PlaneDto;
+import com.example.airport.domain.to.PlaneDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,7 +76,7 @@ public class PlaneMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnListOfEntity() {
         //given
-        List<PlaneDto> dtos = new ArrayList<PlaneDto>();
+        List<PlaneDto> dtos = new ArrayList<>();
         dtos.add(this.createPlaneDto(1L,"123123","Test.Sp.Zoo"));
         dtos.add(this.createPlaneDto(2L,"32131231","Test2.Sp.Zoo"));
         //when
@@ -111,7 +111,7 @@ public class PlaneMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoesWhenDtoesIncludeElementWithAllNullParameters() {
         //given
-        List<PlaneDto> dtos = new ArrayList<PlaneDto>();
+        List<PlaneDto> dtos = new ArrayList<>();
         dtos.add(this.createPlaneDto(null,null,null));
         dtos.add( this.createPlaneDto(null,null,null));
         dtos.add( this.createPlaneDto(2L,"123123123","Test.Sp.Zoo"));
@@ -129,7 +129,7 @@ public class PlaneMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoWhenDtoesIncludeNullElement() {
         //given
-        List<PlaneDto> dtos = new ArrayList<PlaneDto>();
+        List<PlaneDto> dtos = new ArrayList<>();
         dtos.add(null);
         dtos.add(null);
         //when
@@ -145,7 +145,7 @@ public class PlaneMapperImplTest {
     @Test
     public void map2ToesShouldReturnListOfDto() {
         //given
-        List<Plane> entities = new ArrayList<Plane>();
+        List<Plane> entities = new ArrayList<>();
         entities.add(this.createPlane(1L,"123123","Test.Sp.Zoo"));
         entities.add(this.createPlane(2L,"32131231","Test2.Sp.Zoo"));
         //when
@@ -180,7 +180,7 @@ public class PlaneMapperImplTest {
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {
         //given
-        List<Plane> entities = new ArrayList<Plane>();
+        List<Plane> entities = new ArrayList<>();
         entities.add(this.createPlane(null,null,null));
         entities.add( this.createPlane(null,null,null));
         entities.add( this.createPlane(2L,"123123123","Test.Sp.Zoo"));
@@ -198,7 +198,7 @@ public class PlaneMapperImplTest {
     @Test
     public void map2ToesShouldReturnDToesWhenEntitiesIncludeNullElement() {
         //given
-        List<Plane> entities = new ArrayList<Plane>();
+        List<Plane> entities = new ArrayList<>();
         entities.add(null);
         entities.add(null);
         //when

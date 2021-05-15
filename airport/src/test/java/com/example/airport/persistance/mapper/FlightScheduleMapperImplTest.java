@@ -2,7 +2,7 @@ package com.example.airport.persistance.mapper;
 
 import com.example.airport.domain.entity.FlightSchedule;
 import com.example.airport.domain.enumeration.FlyType;
-import com.example.airport.persistance.to.FlightScheduleDto;
+import com.example.airport.domain.to.FlightScheduleDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -82,7 +82,7 @@ public class FlightScheduleMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnListOfEntity() {
         //given
-        List<FlightScheduleDto> dtos = new ArrayList<FlightScheduleDto>();
+        List<FlightScheduleDto> dtos = new ArrayList<>();
         dtos.add( this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL));
         dtos.add( this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL));
         //when
@@ -117,7 +117,7 @@ public class FlightScheduleMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoesWhenDtoesIncludeElementWithAllNullParameters() {
         //given
-        List<FlightScheduleDto> dtos = new ArrayList<FlightScheduleDto>();
+        List<FlightScheduleDto> dtos = new ArrayList<>();
         dtos.add(this.createFlightScheduleDto(null,null,null,null,null,null,null));
         dtos.add( this.createFlightScheduleDto(null,null,null,null,null,null,null));
         dtos.add( this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL));
@@ -135,7 +135,7 @@ public class FlightScheduleMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoWhenDtoesIncludeNullElement() {
         //given
-        List<FlightScheduleDto> dtos = new ArrayList<FlightScheduleDto>();
+        List<FlightScheduleDto> dtos = new ArrayList<>();
         dtos.add(null);
         dtos.add(null);
         //when
@@ -151,7 +151,7 @@ public class FlightScheduleMapperImplTest {
     @Test
     public void map2ToesShouldReturnListOfDto() {
         //given
-        List<FlightSchedule> entities = new ArrayList<FlightSchedule>();
+        List<FlightSchedule> entities = new ArrayList<>();
         entities.add( this.createFlightSchedule(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL));
         entities.add( this.createFlightSchedule(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL));
         //when
@@ -186,7 +186,7 @@ public class FlightScheduleMapperImplTest {
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {
         //given
-        List<FlightSchedule> entities = new ArrayList<FlightSchedule>();
+        List<FlightSchedule> entities = new ArrayList<>();
         entities.add(this.createFlightSchedule(null,null,null,null,null,null,null));
         entities.add( this.createFlightSchedule(null,null,null,null,null,null,null));
         entities.add( this.createFlightSchedule(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL));
@@ -204,7 +204,7 @@ public class FlightScheduleMapperImplTest {
     @Test
     public void map2ToesShouldReturnDToesWhenEntitiesIncludeNullElement() {
         //given
-        List<FlightSchedule> entities = new ArrayList<FlightSchedule>();
+        List<FlightSchedule> entities = new ArrayList<>();
         entities.add(null);
         entities.add(null);
         //when

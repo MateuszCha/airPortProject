@@ -2,7 +2,7 @@ package com.example.airport.persistance.mapper.impl;
 
 import com.example.airport.domain.entity.FlightSchedule;
 import com.example.airport.persistance.mapper.FlightScheduleMapper;
-import com.example.airport.persistance.to.FlightScheduleDto;
+import com.example.airport.domain.to.FlightScheduleDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

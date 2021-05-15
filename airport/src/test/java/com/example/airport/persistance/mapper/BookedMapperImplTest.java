@@ -3,7 +3,7 @@ package com.example.airport.persistance.mapper;
 import com.example.airport.domain.entity.Booked;
 import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.SoldType;
-import com.example.airport.persistance.to.BookedDto;
+import com.example.airport.domain.to.BookedDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -82,7 +82,7 @@ public class BookedMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnListOfEntity() {
         //given
-        List<BookedDto> dtos = new ArrayList<BookedDto>();
+        List<BookedDto> dtos = new ArrayList<>();
         dtos.add( this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now()));
         dtos.add( this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10)));
         //when
@@ -117,7 +117,7 @@ public class BookedMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoesWhenDtoesIncludeElementWithAllNullParameters() {
         //given
-        List<BookedDto> dtos = new ArrayList<BookedDto>();
+        List<BookedDto> dtos = new ArrayList<>();
         dtos.add(this.createBookedDto(null,null,null,null,null,null));
         dtos.add(this.createBookedDto(null,null,null,null,null,null));
         dtos.add( this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now()));
@@ -135,7 +135,7 @@ public class BookedMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoWhenDtoesIncludeNullElement() {
         //given
-        List<BookedDto> dtos = new ArrayList<BookedDto>();
+        List<BookedDto> dtos = new ArrayList<>();
         dtos.add(null);
         dtos.add(null);
         //when
@@ -151,7 +151,7 @@ public class BookedMapperImplTest {
     @Test
     public void map2ToesShouldReturnListOfDto() {
         //given
-        List<Booked> entities = new ArrayList<Booked>();
+        List<Booked> entities = new ArrayList<>();
         entities.add( this.createBooked(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now()));
         entities.add( this.createBooked(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10)));
         //when
@@ -186,7 +186,7 @@ public class BookedMapperImplTest {
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {
         //given
-        List<Booked> entities = new ArrayList<Booked>();
+        List<Booked> entities = new ArrayList<>();
         entities.add(this.createBooked(null,null,null,null,null,null));
         entities.add(this.createBooked(null,null,null,null,null,null));
         entities.add( this.createBooked(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now()));
@@ -204,7 +204,7 @@ public class BookedMapperImplTest {
     @Test
     public void map2ToesShouldReturnDToesWhenEntitiesIncludeNullElement() {
         //given
-        List<Booked> entities = new ArrayList<Booked>();
+        List<Booked> entities = new ArrayList<>();
         entities.add(null);
         entities.add(null);
         //when

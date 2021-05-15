@@ -2,7 +2,7 @@ package com.example.airport.persistance.mapper;
 
 import com.example.airport.domain.entity.Client;
 import com.example.airport.domain.enumeration.DocumentType;
-import com.example.airport.persistance.to.ClientDto;
+import com.example.airport.domain.to.ClientDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -80,7 +80,7 @@ public class ClientMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnListOfEntity() {
         //given
-        List<ClientDto> dtos = new ArrayList<ClientDto>();
+        List<ClientDto> dtos = new ArrayList<>();
         dtos.add(this.createClientDto(1L,"name","surnam","66","email","xR#",DocumentType.VISA));
         dtos.add(this.createClientDto(2L,"name2","surnam2","662","emai2l","x2#",DocumentType.PASSPORT));
         //when
@@ -115,7 +115,7 @@ public class ClientMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtosWhenDtosIncludeElementWithAllNullParameters() {
         //given
-        List<ClientDto> dtos = new ArrayList<ClientDto>();
+        List<ClientDto> dtos = new ArrayList<>();
         dtos.add(this.createClientDto(null,null,null,null,null,null,null));
         dtos.add(this.createClientDto(null,null,null,null,null,null,null));
         dtos.add(this.createClientDto(1L,"name","surnam","66","email","xR#",DocumentType.VISA));
@@ -133,7 +133,7 @@ public class ClientMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoWhenDtoesIncludeNullElement() {
         //given
-        List<ClientDto> dtos = new ArrayList<ClientDto>();
+        List<ClientDto> dtos = new ArrayList<>();
         dtos.add(null);
         dtos.add(null);
         //when
@@ -149,7 +149,7 @@ public class ClientMapperImplTest {
     @Test
     public void map2ToesShouldReturnListOfDto() {
         //given
-        List<Client> entities = new ArrayList<Client>();
+        List<Client> entities = new ArrayList<>();
         entities.add(this.createClient(1L,"name","surnam","66","email","xR#",DocumentType.VISA));
         entities.add(this.createClient(2L,"name2","surnam2","662","emai2l","x2#",DocumentType.PASSPORT));
         //when
@@ -184,7 +184,7 @@ public class ClientMapperImplTest {
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {
         //given
-        List<Client> entities = new ArrayList<Client>();
+        List<Client> entities = new ArrayList<>();
         entities.add(this.createClient(null,null,null,null,null,null,null));
         entities.add(this.createClient(null,null,null,null,null,null,null));
         entities.add(this.createClient(1L,"name","surnam","66","email","xR#",DocumentType.VISA));
@@ -202,7 +202,7 @@ public class ClientMapperImplTest {
     @Test
     public void map2ToesShouldReturnDToesWhenEntitiesIncludeNullElement() {
         //given
-        List<Client> entities = new ArrayList<Client>();
+        List<Client> entities = new ArrayList<>();
         entities.add(null);
         entities.add(null);
         //when

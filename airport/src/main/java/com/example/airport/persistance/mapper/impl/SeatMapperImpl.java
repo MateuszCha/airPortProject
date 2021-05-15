@@ -2,7 +2,7 @@ package com.example.airport.persistance.mapper.impl;
 
 import com.example.airport.domain.entity.Seat;
 import com.example.airport.persistance.mapper.SeatMapper;
-import com.example.airport.persistance.to.SeatDto;
+import com.example.airport.domain.to.SeatDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

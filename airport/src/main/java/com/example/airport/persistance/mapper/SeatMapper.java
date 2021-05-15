@@ -1,7 +1,7 @@
 package com.example.airport.persistance.mapper;
 
 import com.example.airport.domain.entity.Seat;
-import com.example.airport.persistance.to.SeatDto;
+import com.example.airport.domain.to.SeatDto;
 
 import java.util.List;
 

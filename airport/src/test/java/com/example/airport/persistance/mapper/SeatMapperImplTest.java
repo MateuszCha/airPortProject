@@ -3,7 +3,7 @@ package com.example.airport.persistance.mapper;
 import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.enumeration.CategoryType;
 import com.example.airport.domain.enumeration.SeatPosition;
-import com.example.airport.persistance.to.SeatDto;
+import com.example.airport.domain.to.SeatDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -82,7 +82,7 @@ public class SeatMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnListOfEntity() {
         //given
-        List<SeatDto> dtos = new ArrayList<SeatDto>();
+        List<SeatDto> dtos = new ArrayList<>();
         dtos.add(this.createSeatDto(1L,1,1,CategoryType.BUSINESS,SeatPosition.LEFT,true));
         dtos.add(this.createSeatDto(2L,0,0,CategoryType.ECONOMIC,SeatPosition.RIGHT,false));
 
@@ -118,7 +118,7 @@ public class SeatMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoesWhenDtoesIncludeElementWithAllNullParameters() {
         //given
-        List<SeatDto> dtos = new ArrayList<SeatDto>();
+        List<SeatDto> dtos = new ArrayList<>();
         dtos.add(this.createSeatDto(null,null,null,null,null,null));
         dtos.add( this.createSeatDto(null,null,null,null,null,null));
         dtos.add(this.createSeatDto(2L,0,0,CategoryType.ECONOMIC,SeatPosition.RIGHT,false));
@@ -137,7 +137,7 @@ public class SeatMapperImplTest {
     @Test
     public void map2EntitiesShouldReturnDtoWhenDtoesIncludeNullElement() {
         //given
-        List<SeatDto> dtos = new ArrayList<SeatDto>();
+        List<SeatDto> dtos = new ArrayList<>();
         dtos.add(null);
         dtos.add(null);
         //when
@@ -153,7 +153,7 @@ public class SeatMapperImplTest {
     @Test
     public void map2ToesShouldReturnListOfDto() {
         //given
-        List<Seat> entities = new ArrayList<Seat>();
+        List<Seat> entities = new ArrayList<>();
         entities.add(this.createSeat(1L,1,1,CategoryType.BUSINESS,SeatPosition.LEFT,true));
         entities.add(this.createSeat(2L,0,0,CategoryType.ECONOMIC,SeatPosition.RIGHT,false));
 
@@ -189,7 +189,7 @@ public class SeatMapperImplTest {
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {
         //given
-        List<Seat> entities = new ArrayList<Seat>();
+        List<Seat> entities = new ArrayList<>();
         entities.add(this.createSeat(null,null,null,null,null,null));
         entities.add( this.createSeat(null,null,null,null,null,null));
         entities.add(this.createSeat(2L,0,0,CategoryType.ECONOMIC,SeatPosition.RIGHT,false));
@@ -208,7 +208,7 @@ public class SeatMapperImplTest {
     @Test
     public void map2ToesShouldReturnDToesWhenEntitiesIncludeNullElement() {
         //given
-        List<Seat> entities = new ArrayList<Seat>();
+        List<Seat> entities = new ArrayList<>();
         entities.add(null);
         entities.add(null);
         //when

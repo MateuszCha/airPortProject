@@ -1,7 +1,7 @@
 package com.example.airport.persistance.mapper;
 
 import com.example.airport.domain.entity.Booked;
-import com.example.airport.persistance.to.BookedDto;
+import com.example.airport.domain.to.BookedDto;
 
 import java.util.List;
 
