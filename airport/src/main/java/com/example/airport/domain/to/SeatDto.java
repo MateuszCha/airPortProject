@@ -1,4 +1,4 @@
-package com.example.airport.persistance.to;
+package com.example.airport.domain.to;
 
 import com.example.airport.domain.enumeration.CategoryType;
 import com.example.airport.domain.enumeration.SeatPosition;
@@ -104,6 +104,7 @@ public class SeatDto {
         private Boolean enable;
 
         public SeatDtoBuilder() {
+            //default const...
         }
         public SeatDtoBuilder withId(Long id){
             this.id = id;

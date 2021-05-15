@@ -1,4 +1,4 @@
-package com.example.airport.persistance.to;
+package com.example.airport.domain.to;
 
 import java.util.Objects;
 
@@ -64,6 +64,8 @@ public class PlaneDto {
         private String nameCarrier;
 
         public PlaneDtoBuilder() {
+
+            //default const...
         }
 
         public  PlaneDtoBuilder withId(Long id){

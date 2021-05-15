@@ -1,4 +1,4 @@
-package com.example.airport.persistance.to;
+package com.example.airport.domain.to;
 
 import com.example.airport.domain.enumeration.FlyType;
 
@@ -115,6 +115,7 @@ public class FlightScheduleDto {
         private FlyType flyType;
 
         public FlightScheduleDtoBuilder() {
+            //default const...
         }
 
         public FlightScheduleDtoBuilder withId(Long id){

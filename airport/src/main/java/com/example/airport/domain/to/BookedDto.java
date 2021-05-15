@@ -1,4 +1,4 @@
-package com.example.airport.persistance.to;
+package com.example.airport.domain.to;
 
 import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.SoldType;

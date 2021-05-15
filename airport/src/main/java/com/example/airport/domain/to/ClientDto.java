@@ -1,4 +1,4 @@
-package com.example.airport.persistance.to;
+package com.example.airport.domain.to;
 
 import com.example.airport.domain.enumeration.DocumentType;
 import java.util.Objects;
@@ -113,6 +113,7 @@ public class ClientDto {
         private DocumentType documentType;
 
         public ClientDtoBuilder() {
+            //default const...
         }
 
         public ClientDtoBuilder withID(Long id){
