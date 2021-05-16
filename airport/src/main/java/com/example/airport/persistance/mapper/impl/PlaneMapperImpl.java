@@ -6,6 +6,7 @@ import com.example.airport.domain.to.PlaneDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class PlaneMapperImpl implements PlaneMapper {
     @Override
     public List<Plane> map2Entities(List<PlaneDto> toes) {
         if(Objects.isNull(toes) || toes.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         return toes.stream().map((e)->this.map2Entity(e)).collect(Collectors.toList());
 
@@ -42,7 +43,7 @@ public class PlaneMapperImpl implements PlaneMapper {
     @Override
     public List<PlaneDto> map2Toes(List<Plane> entities) {
         if(Objects.isNull(entities) || entities.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         return entities.stream().map((t)->this.map2To(t)).collect(Collectors.toList());
 

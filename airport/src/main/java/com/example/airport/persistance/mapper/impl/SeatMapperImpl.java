@@ -6,6 +6,7 @@ import com.example.airport.domain.to.SeatDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class SeatMapperImpl implements SeatMapper {
     @Override
     public List<Seat> map2Entities(List<SeatDto> toes) {
         if(Objects.isNull(toes) || toes.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         return toes.stream().map((e)->this.map2Entity(e)).collect(Collectors.toList());
 
@@ -42,7 +43,7 @@ public class SeatMapperImpl implements SeatMapper {
     @Override
     public List<SeatDto> map2Toes(List<Seat> entities) {
         if(Objects.isNull(entities) || entities.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         return entities.stream().map((t)->this.map2To(t)).collect(Collectors.toList());
 

@@ -6,6 +6,7 @@ import com.example.airport.domain.to.BookedDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class BookedMapperImpl implements BookedMapper {
     @Override
     public List<Booked> map2Entities(List<BookedDto> toes) {
         if(Objects.isNull(toes) || toes.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         return toes.stream().map((e)->this.map2Entity(e)).collect(Collectors.toList());
 
@@ -42,7 +43,7 @@ public class BookedMapperImpl implements BookedMapper {
     @Override
     public List<BookedDto> map2Toes(List<Booked> entities) {
         if(Objects.isNull(entities) || entities.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         return entities.stream().map((t)->this.map2To(t)).collect(Collectors.toList());
 
