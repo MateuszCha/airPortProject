@@ -103,6 +103,19 @@ public class ClientDto {
         return Objects.hash(id, firstName, surname, phoneNumber, email, idNumber, documentType);
     }
 
+    @Override
+    public String toString() {
+        return "ClientDto{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", surname='" + surname + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", idNumber='" + idNumber + '\'' +
+                ", documentType=" + documentType +
+                '}';
+    }
+
     public static class ClientDtoBuilder{
         private Long id;
         private String firstName;

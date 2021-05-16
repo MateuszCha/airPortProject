@@ -1,11 +1,14 @@
-package com.example.airport.persistance.service.crud;
+package com.example.airport.persistance.service.crud.impl;
 
 import com.example.airport.domain.entity.Client;
 import com.example.airport.domain.to.ClientDto;
+import com.example.airport.persistance.exception.BusinessException;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.ClientMapper;
 import com.example.airport.persistance.repository.ClientRepository;
+import com.example.airport.persistance.service.crud.AbstractCrudService;
+import com.example.airport.persistance.service.crud.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +18,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
+public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, ClientService {
 
     private final ClientMapper mapper;
    // private final ClientValidator validator;
     private final ClientRepository repository;
+    private static final String INDEX_EXCEPTION = "entity on index: ";
 
     @Autowired
     public ClientServiceImpl(ClientMapper mapper, ClientRepository repository) {
@@ -29,13 +33,13 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
 
     @Transactional
     @Override
-    public ClientDto get(Long index){
+    public ClientDto get(Long index) throws BusinessException {
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index.toString());
+            throw new IllegalIndexEntity("index:" + index);
         }
         Optional<Client> client = repository.findById(index);
         if(client.isEmpty()){
-            throw new NoFoundEntity("entity on index: " + index.toString());
+            throw new NoFoundEntity(INDEX_EXCEPTION + index);
         }
         return mapper.map2To(client.get());
     }
@@ -44,9 +48,6 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
     @Override
     public List<ClientDto> getAll(){
         List<Client> clients = repository.findAll();
-        if(Objects.isNull(clients) || clients.isEmpty()) {
-            throw new NoFoundEntity("entities");
-        }
         return mapper.map2Toes(clients);
     }
 
@@ -57,6 +58,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
         {
             throw new IllegalArgumentException();
         }
+        clientDto.setId(null);
         Client client = mapper.map2Entity(clientDto);
         client = repository.save(client);
         return mapper.map2To(client);
@@ -65,11 +67,11 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
     @Override
     public ClientDto remove(Long index){
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index.toString());
+            throw new IllegalIndexEntity("index:" + index);
         }
         Optional<Client> client = repository.findById(index);
         if(client.isEmpty()){
-            throw new NoFoundEntity("entity on index: " + index.toString());
+            throw new NoFoundEntity(INDEX_EXCEPTION + index);
         }
         repository.delete(client.get());
         return mapper.map2To(client.get());
@@ -83,7 +85,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
         }
         Optional<Client> client = repository.findById(clientDto.getId());
         if(client.isEmpty()){
-            throw new IllegalIndexEntity("index:" + clientDto.getId());
+            throw new NoFoundEntity(INDEX_EXCEPTION + clientDto.getId());
         }
         client.get().setFirstName(clientDto.getFirstName());
         client.get().setSurname(clientDto.getSurname());
@@ -91,7 +93,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
         client.get().setEmail(clientDto.getEmail());
         client.get().setIdNumber(clientDto.getIdNumber());
         client.get().setDocumentType(clientDto.getDocumentType());
-        repository.flush(); // jesli dobze pamietra
+        repository.save(client.get());
         return mapper.map2To(client.get());
     }
 
@@ -101,10 +103,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>{
      * @return true if index is properly, otherwise false.
      */
     private boolean doesIndexProperly(Long index){
-        if(Objects.isNull(index) || index < 1){
-            return false;
-        }
-        return true;
+        return !(Objects.isNull(index) || index < 1);
     }
 
 }
