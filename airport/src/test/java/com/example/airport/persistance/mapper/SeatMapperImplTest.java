@@ -4,17 +4,20 @@ import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.enumeration.CategoryType;
 import com.example.airport.domain.enumeration.SeatPosition;
 import com.example.airport.domain.to.SeatDto;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
+
 
 @SpringBootTest
+@RunWith(SpringJUnit4ClassRunner.class)
 public class SeatMapperImplTest {
 
     @Autowired
@@ -98,22 +101,22 @@ public class SeatMapperImplTest {
         compareEntityWithDto(result.get(1), dtos.get(1));
     }
     @Test
-    public void map2EntitiesShouldReturnNullWhenDtoesIsNull() {
+    public void map2EntitiesShouldReturnEmptyCollectionWhenDtoesIsNull() {
         //given
         List<SeatDto> expect = null;
         //when
         List<Seat> result = mapper.map2Entities(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
-    public void map2EntitiesShouldReturnNullWhenDtoesIsEmpty() {
+    public void map2EntitiesShouldReturnEmptyCollectionWhenDtoesIsEmpty() {
         //given
         List<SeatDto> expect = new ArrayList<>();
         //when
         List<Seat> result = mapper.map2Entities(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
     public void map2EntitiesShouldReturnDtoesWhenDtoesIncludeElementWithAllNullParameters() {
@@ -169,22 +172,22 @@ public class SeatMapperImplTest {
         compareEntityWithDto(entities.get(1), result.get(1));
     }
     @Test
-    public void map2EToesShouldReturnNullWhenEntitiesIsNull() {
+    public void map2EToesShouldReturnEmptyCollectionWhenEntitiesIsNull() {
         //given
         List<Seat> expect = null;
         //when
         List<SeatDto> result = mapper.map2Toes(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
-    public void map2EToesShouldReturnNullWhenEntitiesIsEmpty() {
+    public void map2EToesShouldReturnEmptyCollectionWhenEntitiesIsEmpty() {
         //given
         List<Seat> expect = new ArrayList<>();
         //when
         List<SeatDto> result = mapper.map2Toes(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {

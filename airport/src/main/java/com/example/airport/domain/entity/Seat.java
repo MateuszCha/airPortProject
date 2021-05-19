@@ -1,15 +1,17 @@
 package com.example.airport.domain.entity;
 
+import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.CategoryType;
 import com.example.airport.domain.enumeration.SeatPosition;
 
 import javax.persistence.*;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "seat")
-public class Seat {
+public class Seat  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,12 +37,12 @@ public class Seat {
     private Plane plane;
 
     @OneToMany(mappedBy = "seat" ,fetch = FetchType.EAGER)
-    private List<Booked> booked;
+    private Set<Booked> booked;
 
     public Seat() {
     }
 
-    public Seat(Long id, Integer row, Integer column, CategoryType categoryType, SeatPosition position, Boolean enable, Plane plane, List<Booked> booked) {
+    public Seat(Long id, Integer row, Integer column, CategoryType categoryType, SeatPosition position, Boolean enable, Plane plane, Set<Booked> booked) {
         this.id = id;
         this.row = row;
         this.column = column;
@@ -50,13 +52,14 @@ public class Seat {
         this.plane = plane;
         this.booked = booked;
     }
-    public void add(){
-        //TODO
 
-    }
     public void remove(){
-        //TODO
-
+        if(Objects.nonNull(booked) && !booked.isEmpty()){
+            booked.stream().forEach(t->{
+                    t.setBookedState(BookedState.TO_REMOVED);
+                    t.setSeat(null);
+            });
+        }
     }
 
     public Long getId() {
@@ -115,11 +118,11 @@ public class Seat {
         this.plane = plane;
     }
 
-    public List<Booked> getBooked() {
+    public Set<Booked> getBooked() {
         return booked;
     }
 
-    public void setBooked(List<Booked> booked) {
+    public void setBooked(Set<Booked> booked) {
         this.booked = booked;
     }
 
