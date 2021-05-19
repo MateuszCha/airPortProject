@@ -3,12 +3,14 @@ package com.example.airport.domain.entity;
 import com.example.airport.domain.enumeration.FlyType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Entity
 @Table(name = "flight_schedule")
-public class FlightSchedule {
+public class FlightSchedule  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +23,7 @@ public class FlightSchedule {
     private LocalDateTime startTime;
 
     @Column(name = "arrive_date_time",nullable = false)
-    private LocalDateTime arrive;
+    private LocalDateTime arriveTime;
 
     @Column(name = "description", nullable = true)
     private String description;
@@ -39,11 +41,15 @@ public class FlightSchedule {
     public FlightSchedule() {
     }
 
-    public FlightSchedule(Long id, String name, LocalDateTime startTime, LocalDateTime arrive, String description, String destination, FlyType flyType, Plane plane) {
+    public FlightSchedule(Long id, String name, LocalDateTime startTime, LocalDateTime arriveTime, String description, String destination, FlyType flyType, Plane plane) {
         this.id = id;
         this.name = name;
-        this.startTime = startTime;
-        this.arrive = arrive;
+        if(Objects.nonNull(startTime)) {
+            this.startTime = startTime.truncatedTo(ChronoUnit.SECONDS);
+        }
+        if(Objects.nonNull(arriveTime)) {
+            this.arriveTime = arriveTime.truncatedTo(ChronoUnit.SECONDS);
+        }
         this.description = description;
         this.destination = destination;
         this.flyType = flyType;
@@ -71,15 +77,23 @@ public class FlightSchedule {
     }
 
     public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+        if(Objects.nonNull(startTime)) {
+            this.startTime = startTime.truncatedTo(ChronoUnit.SECONDS);
+        }else{
+            this.startTime = null;
+        }
     }
 
-    public LocalDateTime getArrive() {
-        return arrive;
+    public LocalDateTime getArriveTime() {
+        return arriveTime;
     }
 
-    public void setArrive(LocalDateTime arrive) {
-        this.arrive = arrive;
+    public void setArriveTime(LocalDateTime arriveTime) {
+        if(Objects.nonNull(arriveTime)) {
+            this.arriveTime = arriveTime.truncatedTo(ChronoUnit.SECONDS);
+        }else{
+            this.arriveTime = null;
+        }
     }
 
     public String getDescription() {
@@ -122,7 +136,7 @@ public class FlightSchedule {
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(startTime, that.startTime) &&
-                Objects.equals(arrive, that.arrive) &&
+                Objects.equals(arriveTime, that.arriveTime) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(destination, that.destination) &&
                 flyType == that.flyType;
@@ -130,6 +144,6 @@ public class FlightSchedule {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startTime, arrive, description, destination, flyType);
+        return Objects.hash(id, name, startTime, arriveTime, description, destination, flyType);
     }
 }

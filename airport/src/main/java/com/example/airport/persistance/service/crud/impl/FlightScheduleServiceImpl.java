@@ -1,14 +1,14 @@
-package com.example.airport.persistance.service.crud;
+package com.example.airport.persistance.service.crud.impl;
 
 import com.example.airport.domain.entity.FlightSchedule;
 import com.example.airport.domain.entity.Plane;
 import com.example.airport.domain.to.FlightScheduleDto;
-import com.example.airport.domain.to.PlaneDto;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.FlightScheduleMapper;
 import com.example.airport.persistance.repository.FlightScheduleRepository;
 import com.example.airport.persistance.repository.PlaneRepository;
+import com.example.airport.persistance.service.crud.FlightScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class FlightScheduleServiceImpl implements AbstractCrudService<Long, FlightScheduleDto>{
+public class FlightScheduleServiceImpl implements FlightScheduleService {
     private final FlightScheduleRepository repository;
     private final FlightScheduleMapper mapper;
     //private final FlightScheduleValidator validator;
@@ -35,11 +35,11 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
     @Override
     public FlightScheduleDto get(Long flightIndex) {
         if(!doesIndexProperly(flightIndex)){
-            throw new IllegalIndexEntity("Flight schedule on index: " + flightIndex.toString());
+            throw new IllegalIndexEntity("Flight schedule on index: " + flightIndex);
         }
         Optional<FlightSchedule> flight = repository.findById(flightIndex);
         if(flight.isEmpty()){
-            throw new NoFoundEntity("Flight schedules on index: " + flightIndex.toString());
+            throw new NoFoundEntity("Flight schedules on index: " + flightIndex);
         }
         return mapper.map2To(flight.get());
 
@@ -48,24 +48,17 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
     @Override
     public List<FlightScheduleDto> getAll() {
         List<FlightSchedule> flightSchedules = repository.findAll();
-        if(Objects.isNull(flightSchedules) || flightSchedules.isEmpty()){
-            throw new NoFoundEntity("Flight schedules");
-        }
         return mapper.map2Toes(flightSchedules);
     }
-    @Transactional
+
     @Override
-    public FlightScheduleDto add(FlightScheduleDto dto) {
-
-        return null;
-    }
-
     @Transactional
-    public FlightScheduleDto add(FlightScheduleDto dto,Long planeIndex) {
+    public FlightScheduleDto add(FlightScheduleDto dto, Long planeIndex) {
         if(Objects.isNull(dto)) // validator.isUpdate(dto)
         {
             throw new IllegalArgumentException();
         }
+        dto.setId(null);
         FlightSchedule flightSchedule = mapper.map2Entity(dto);
         if(doesIndexProperly(planeIndex)){
             Optional<Plane> plane = planeRepository.findById(planeIndex);
@@ -74,18 +67,13 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
             }
             flightSchedule.setPlane(plane.get());
         }else{
-            throw new IllegalIndexEntity("plane index: " + planeIndex.toString());
+            throw new IllegalIndexEntity("plane on index: " + planeIndex);
         }
        repository.save(flightSchedule);
         return mapper.map2To(flightSchedule);
     }
 
     @Override
-    public FlightScheduleDto update(FlightScheduleDto dto) {
-        return null;
-    }
-
-
     @Transactional
     public FlightScheduleDto update(FlightScheduleDto dto, Long planeIndex) {
         if(Objects.isNull(dto)) // || validator.isUpdate(dto)
@@ -94,12 +82,12 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
         }
         Optional<FlightSchedule> flight = repository.findById(dto.getId());
         if(flight.isEmpty()){
-            throw new NoFoundEntity("Flight schedules on index: " + dto.getId().toString());
+            throw new NoFoundEntity("Flight schedules on index: " + dto.getId());
         }
 
         flight.get().setName(dto.getName());
         flight.get().setStartTime(dto.getStartTime());
-        flight.get().setArrive(dto.getArrive());
+        flight.get().setArriveTime(dto.getArriveTime());
         flight.get().setDescription(dto.getDescription());
         flight.get().setDestination(dto.getDestination());
         flight.get().setFlyType(dto.getFlyType());
@@ -110,8 +98,6 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
                 throw new NoFoundEntity("plane on index" + planeIndex);
             }
             flight.get().setPlane(plane.get());
-        }else{
-            throw new IllegalIndexEntity("plane index: " + planeIndex.toString());
         }
         return mapper.map2To(flight.get());
     }
@@ -120,11 +106,11 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
     @Override
     public FlightScheduleDto remove(Long flightIndex) {
         if(!doesIndexProperly(flightIndex)){
-            throw new IllegalIndexEntity("Flight schedules on index: " + flightIndex.toString());
+            throw new IllegalIndexEntity("Flight schedules on index: " + flightIndex);
         }
         Optional<FlightSchedule> flight = repository.findById(flightIndex);
         if(flight.isEmpty()){
-            throw new NoFoundEntity("Flight schedules on index: " + flightIndex.toString());
+            throw new NoFoundEntity("Flight schedules on index: " + flightIndex);
         }
         FlightScheduleDto flightScheduleDto =  mapper.map2To(flight.get());
         repository.delete(flight.get());
@@ -136,9 +122,6 @@ public class FlightScheduleServiceImpl implements AbstractCrudService<Long, Flig
      * @return true if index is properly, otherwise false.
      */
     private boolean doesIndexProperly(Long index){
-        if(Objects.isNull(index) || index < 1){
-            return false;
-        }
-        return true;
+        return !(Objects.isNull(index) || index < 1);
     }
 }

@@ -3,13 +3,14 @@ package com.example.airport.domain.to;
 import com.example.airport.domain.enumeration.FlyType;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class FlightScheduleDto {
     private Long id;
     private String name;
     private LocalDateTime startTime;
-    private LocalDateTime arrive;
+    private LocalDateTime arriveTime;
     private String description;
     private String destination;
     private FlyType flyType;
@@ -17,11 +18,15 @@ public class FlightScheduleDto {
     public FlightScheduleDto() {
     }
 
-    public FlightScheduleDto(Long id, String name, LocalDateTime startTime, LocalDateTime arrive, String description, String destination, FlyType flyType) {
+    private FlightScheduleDto(Long id, String name, LocalDateTime startTime, LocalDateTime arriveTime, String description, String destination, FlyType flyType) {
         this.id = id;
         this.name = name;
-        this.startTime = startTime;
-        this.arrive = arrive;
+        if(Objects.nonNull(startTime)) {
+            this.startTime = startTime.truncatedTo(ChronoUnit.SECONDS);
+        }
+        if(Objects.nonNull(arriveTime)) {
+            this.arriveTime = arriveTime.truncatedTo(ChronoUnit.SECONDS);
+        }
         this.description = description;
         this.destination = destination;
         this.flyType = flyType;
@@ -52,15 +57,23 @@ public class FlightScheduleDto {
     }
 
     public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+        if(Objects.nonNull(startTime)) {
+            this.startTime = startTime.truncatedTo(ChronoUnit.SECONDS);
+        }else{
+            this.startTime = null;
+        }
     }
 
-    public LocalDateTime getArrive() {
-        return arrive;
+    public LocalDateTime getArriveTime() {
+        return arriveTime;
     }
 
-    public void setArrive(LocalDateTime arrive) {
-        this.arrive = arrive;
+    public void setArriveTime(LocalDateTime arriveTime) {
+        if(Objects.nonNull(arriveTime)) {
+            this.arriveTime = arriveTime.truncatedTo(ChronoUnit.SECONDS);
+        }else{
+            this.arriveTime = null;
+        }
     }
 
     public String getDescription() {
@@ -95,7 +108,7 @@ public class FlightScheduleDto {
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(startTime, that.startTime) &&
-                Objects.equals(arrive, that.arrive) &&
+                Objects.equals(arriveTime, that.arriveTime) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(destination, that.destination) &&
                 flyType == that.flyType;
@@ -103,13 +116,13 @@ public class FlightScheduleDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startTime, arrive, description, destination, flyType);
+        return Objects.hash(id, name, startTime, arriveTime, description, destination, flyType);
     }
     public static class FlightScheduleDtoBuilder {
         private Long id;
         private String name;
         private LocalDateTime startTime;
-        private LocalDateTime arrive;
+        private LocalDateTime arriveTime;
         private String description;
         private String destination;
         private FlyType flyType;
@@ -131,7 +144,7 @@ public class FlightScheduleDto {
             return this;
         }
         public FlightScheduleDtoBuilder withArriveTime(LocalDateTime arriveTime){
-            this.arrive = arriveTime;
+            this.arriveTime = arriveTime;
             return this;
         }
         public FlightScheduleDtoBuilder withDescription(String description){
@@ -147,7 +160,7 @@ public class FlightScheduleDto {
             return this;
         }
         public FlightScheduleDto build(){
-            return new FlightScheduleDto(id,name,startTime,arrive,description,destination,flyType);
+            return new FlightScheduleDto(id,name,startTime, arriveTime,description,destination,flyType);
         }
     }
 }

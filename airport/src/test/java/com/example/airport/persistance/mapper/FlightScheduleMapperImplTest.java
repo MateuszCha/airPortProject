@@ -3,17 +3,20 @@ package com.example.airport.persistance.mapper;
 import com.example.airport.domain.entity.FlightSchedule;
 import com.example.airport.domain.enumeration.FlyType;
 import com.example.airport.domain.to.FlightScheduleDto;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class FlightScheduleMapperImplTest {
     
@@ -97,22 +100,22 @@ public class FlightScheduleMapperImplTest {
         compareEntityWithDto(result.get(1), dtos.get(1));
     }
     @Test
-    public void map2EntitiesShouldReturnNullWhenDtoesIsNull() {
+    public void map2EntitiesShouldReturnEmptyCollectionWhenDtoesIsNull() {
         //given
         List<FlightScheduleDto> expect = null;
         //when
         List<FlightSchedule> result = mapper.map2Entities(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
-    public void map2EntitiesShouldReturnNullWhenDtoesIsEmpty() {
+    public void map2EntitiesShouldReturnEmptyCollectionWhenDtoesIsEmpty() {
         //given
         List<FlightScheduleDto> expect = new ArrayList<>();
         //when
         List<FlightSchedule> result = mapper.map2Entities(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
     public void map2EntitiesShouldReturnDtoesWhenDtoesIncludeElementWithAllNullParameters() {
@@ -166,22 +169,22 @@ public class FlightScheduleMapperImplTest {
         compareEntityWithDto(entities.get(1), result.get(1));
     }
     @Test
-    public void map2EToesShouldReturnNullWhenEntitiesIsNull() {
+    public void map2EToesShouldReturnEmptyCollectionWhenEntitiesIsNull() {
         //given
         List<FlightSchedule> expect = null;
         //when
         List<FlightScheduleDto> result = mapper.map2Toes(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
-    public void map2EToesShouldReturnNullWhenEntitiesIsEmpty() {
+    public void map2EToesShouldReturnEmptyCollectionWhenEntitiesIsEmpty() {
         //given
         List<FlightSchedule> expect = new ArrayList<>();
         //when
         List<FlightScheduleDto> result = mapper.map2Toes(expect);
         //then
-        assertNull(result);
+        assertTrue(result.isEmpty());
     }
     @Test
     public void map2ToesShouldReturnDtoWhenEntitiesIncludeElementWithAllNullParameters() {
@@ -217,13 +220,12 @@ public class FlightScheduleMapperImplTest {
         assertNull(entities.get(1));
     }
 
-
     private void checkAllParametersInDtoAndEntityAreNotNull(FlightSchedule entity, FlightScheduleDto dto){
         assertNotNull(entity);
         assertNotNull(entity.getId());
         assertNotNull(entity.getName());
         assertNotNull(entity.getStartTime());
-        assertNotNull(entity.getArrive());
+        assertNotNull(entity.getArriveTime());
         assertNotNull(entity.getDescription());
         assertNotNull(entity.getDestination());
         assertNotNull(entity.getFlyType());
@@ -231,7 +233,7 @@ public class FlightScheduleMapperImplTest {
         assertNotNull(dto.getId());
         assertNotNull(dto.getName());
         assertNotNull(dto.getStartTime());
-        assertNotNull(dto.getArrive());
+        assertNotNull(dto.getArriveTime());
         assertNotNull(dto.getDescription());
         assertNotNull(dto.getDestination());
         assertNotNull(dto.getFlyType());
@@ -241,7 +243,7 @@ public class FlightScheduleMapperImplTest {
         assertNull(entity.getId());
         assertNull(entity.getName());
         assertNull(entity.getStartTime());
-        assertNull(entity.getArrive());
+        assertNull(entity.getArriveTime());
         assertNull(entity.getDescription());
         assertNull(entity.getDestination());
         assertNull(entity.getFlyType());
@@ -249,7 +251,7 @@ public class FlightScheduleMapperImplTest {
         assertNull(dto.getId());
         assertNull(dto.getName());
         assertNull(dto.getStartTime());
-        assertNull(dto.getArrive());
+        assertNull(dto.getArriveTime());
         assertNull(dto.getDescription());
         assertNull(dto.getDestination());
         assertNull(dto.getFlyType());
@@ -258,7 +260,7 @@ public class FlightScheduleMapperImplTest {
         assertEquals(client.getId(), clientDto.getId());
         assertEquals(client.getName(), clientDto.getName());
         assertEquals(client.getStartTime(), clientDto.getStartTime());
-        assertEquals(client.getArrive(), clientDto.getArrive());
+        assertEquals(client.getArriveTime(), clientDto.getArriveTime());
         assertEquals(client.getDescription(), clientDto.getDescription());
         assertEquals(client.getDestination(), clientDto.getDestination());
         assertEquals(client.getFlyType(), clientDto.getFlyType());
