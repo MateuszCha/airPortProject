@@ -4,12 +4,14 @@ import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.SoldType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Entity
 @Table(name = "Booked")
-public class Booked {
+public class Booked  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,18 +48,11 @@ public class Booked {
         this.price = price;
         this.soldType = soldType;
         this.bookedState = bookedState;
-        this.buyingDate = buyingDate;
+        if(Objects.nonNull(buyingDate)) {
+            this.buyingDate = buyingDate.truncatedTo(ChronoUnit.SECONDS);
+        }
         this.client = client;
         this.seat = seat;
-    }
-
-    public void add(){
-        //TODO
-
-    }
-    public void remove(){
-        this.bookedState = BookedState.TO_REMOVED;
-        //TODO
     }
 
     public Long getId() {
@@ -105,7 +100,11 @@ public class Booked {
     }
 
     public void setBuyingDate(LocalDateTime buyingDate) {
-        this.buyingDate = buyingDate;
+        if(Objects.nonNull(buyingDate)) {
+            this.buyingDate = buyingDate.truncatedTo(ChronoUnit.SECONDS);
+        }else {
+            this.buyingDate = null;
+        }
     }
 
     public Client getClient() {

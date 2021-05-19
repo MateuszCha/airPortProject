@@ -4,6 +4,7 @@ import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.SoldType;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class BookedDto {
@@ -23,7 +24,9 @@ public class BookedDto {
         this.price = price;
         this.soldType = soldType;
         this.bookedState = bookedState;
-        this.buyingDate = buyingDate;
+        if(Objects.nonNull(buyingDate)) {
+            this.buyingDate = buyingDate.truncatedTo(ChronoUnit.SECONDS);
+        }
     }
 
     public static BookedDtoBuilder builder(){
@@ -74,7 +77,11 @@ public class BookedDto {
     }
 
     public void setBuyingDate(LocalDateTime buyingDate) {
-        this.buyingDate = buyingDate;
+        if(Objects.nonNull(buyingDate)) {
+            this.buyingDate = buyingDate.truncatedTo(ChronoUnit.SECONDS);
+        }else {
+            this.buyingDate = null;
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.airport.persistance.service.crud;
+package com.example.airport.persistance.service.crud.impl;
 
 import com.example.airport.domain.entity.Booked;
 import com.example.airport.domain.entity.Client;
@@ -10,6 +10,7 @@ import com.example.airport.persistance.mapper.BookedMapper;
 import com.example.airport.persistance.repository.BookedRepository;
 import com.example.airport.persistance.repository.ClientRepository;
 import com.example.airport.persistance.repository.SeatRepository;
+import com.example.airport.persistance.service.crud.BookedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class BookedServiceImpl implements AbstractCrudService<Long, BookedDto> {
+public class BookedServiceImpl implements BookedService {
 
 
     private final BookedMapper mapper;
@@ -41,11 +42,11 @@ public class BookedServiceImpl implements AbstractCrudService<Long, BookedDto> {
     @Override
     public BookedDto get(Long index) {
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index.toString());
+            throw new IllegalIndexEntity("client index:" + index);
         }
         Optional<Booked> booked = repository.findById(index);
         if(booked.isEmpty()){
-            throw new NoFoundEntity("entity on index: " + index.toString());
+            throw new NoFoundEntity("client on index: " + index);
         }
         return mapper.map2To(booked.get());
     }
@@ -54,91 +55,50 @@ public class BookedServiceImpl implements AbstractCrudService<Long, BookedDto> {
     @Override
     public List<BookedDto> getAll() {
         List<Booked> listOfBooked = repository.findAll();
-        if(Objects.isNull(listOfBooked) || listOfBooked.isEmpty()) {
-            throw new NoFoundEntity("entities");
-        }
         return mapper.map2Toes(listOfBooked);
     }
-    // to remove
-    @Override
-    public BookedDto add(BookedDto dto) {
-        if (Objects.isNull(dto))  //|| validator.isValidAdd(dto)
-        {
-            throw new IllegalArgumentException();
-        }
-        Booked booked = mapper.map2Entity(dto);
-        booked = repository.save(booked);
-        return mapper.map2To(booked);
-    }
 
+    @Override
     @Transactional
-    public BookedDto add(BookedDto dto, Long clientIndex,Long seatIndex) {
+    public BookedDto add(BookedDto dto, Long clientIndex, Long seatIndex) {
         if (Objects.isNull(dto))  //|| validator.isValidAdd(dto)
         {
             throw new IllegalArgumentException();
         }
+        dto.setId(null);
         Booked booked = mapper.map2Entity(dto);
         if(doesIndexProperly(clientIndex)){
             Optional<Client> client = clientRepository.findById(clientIndex);
             if(client.isEmpty()){
-                throw new NoFoundEntity("client index : " + clientIndex);
+                throw new NoFoundEntity("client on index : " + clientIndex);
             }
             booked.setClient(client.get());
         }else{
-            throw new IllegalIndexEntity(" client index:" + clientIndex.toString());
+            throw new IllegalIndexEntity("client on index:" + clientIndex);
         }
         if(doesIndexProperly(seatIndex)){
             Optional<Seat> seat = seatRepository.findById(seatIndex);
             if(seat.isEmpty()){
-                throw new NoFoundEntity("seat index : " + seatIndex);
+                throw new NoFoundEntity("seat on index : " + seatIndex);
             }
             booked.setSeat(seat.get());
         }else{
-            throw new IllegalIndexEntity(" seat index:" + seatIndex.toString());
+            throw new IllegalIndexEntity(" seat index:" + seatIndex);
         }
         booked = repository.save(booked);
         return mapper.map2To(booked);
     }
-//to remove
-    @Transactional
+
     @Override
-    public BookedDto update(BookedDto dto) {
-        if(Objects.isNull(dto)) //|| validator.isValidUpdate()
-        {
-            throw new IllegalArgumentException();
-        }
-        Optional<Booked> booked = repository.findById(dto.getId());
-        if(booked.isEmpty()){
-            throw new IllegalIndexEntity("index:" + dto.getId());
-        }
-
-        /*
-         this.id = id;
-        this.reservationNumber = reservationNumber;
-        this.price = price;
-        this.soldType = soldType;
-        this.bookedState = bookedState;
-        this.buyingDate = buyingDate;
-        this.client = client;
-        this.seat = seat;
-         */
-        booked.get().setReservationNumber(dto.getReservationNumber());
-        booked.get().setPrice(dto.getPrice());
-        booked.get().setSoldType(dto.getSoldType());
-        booked.get().setBookedState(dto.getBookedState());
-        booked.get().setBuyingDate(dto.getBuyingDate());
-        return mapper.map2To(booked.get());
-    }
-
     @Transactional
-    public BookedDto update(BookedDto dto,Long clientIndex,Long seatIndex) {
+    public BookedDto update(BookedDto dto, Long clientIndex, Long seatIndex) {
         if(Objects.isNull(dto)) //|| validator.isValidUpdate()
         {
             throw new IllegalArgumentException();
         }
         Optional<Booked> booked = repository.findById(dto.getId());
         if(booked.isEmpty()){
-            throw new IllegalIndexEntity("index:" + dto.getId());
+            throw new NoFoundEntity("index:" + dto.getId());
         }
         booked.get().setReservationNumber(dto.getReservationNumber());
         booked.get().setPrice(dto.getPrice());
@@ -166,11 +126,11 @@ public class BookedServiceImpl implements AbstractCrudService<Long, BookedDto> {
     @Override
     public BookedDto remove(Long index) {
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index.toString());
+            throw new IllegalIndexEntity("index:" + index);
         }
         Optional<Booked> booked = repository.findById(index);
         if(booked.isEmpty()){
-            throw new NoFoundEntity("entity on index: " + index.toString());
+            throw new NoFoundEntity("entity on index: " + index);
         }
         repository.delete(booked.get());
         return mapper.map2To(booked.get());
@@ -180,10 +140,7 @@ public class BookedServiceImpl implements AbstractCrudService<Long, BookedDto> {
      * @param index description index in database
      * @return true if index is properly, otherwise false.
      */
-    private boolean doesIndexProperly(Long index){
-        if(Objects.isNull(index) || index < 1){
-            return false;
-        }
-        return true;
+    private boolean doesIndexProperly(Long index) {
+        return !(Objects.isNull(index) || index < 1);
     }
 }
