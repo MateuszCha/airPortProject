@@ -2,12 +2,13 @@ package com.example.airport.domain.entity;
 
 
 import javax.persistence.*;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "plane")
-public class Plane {
+public class Plane implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,16 +20,16 @@ public class Plane {
     private String nameCarrier;
 
     @OneToMany(mappedBy = "plane",orphanRemoval = true,cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
-    private List<Seat> seats;
+    private Set<Seat> seats;
 
-    @OneToMany(mappedBy = "plane",fetch = FetchType.EAGER)
-    private List<FlightSchedule> flightSchedules;
+    @OneToMany(mappedBy = "plane",fetch = FetchType.LAZY)
+    private Set<FlightSchedule> flightSchedules;
 
 //////CONSTRUCTOR
     public Plane() {
     }
 
-    public Plane(Long id, String serialNumber, String nameCarrier, List<Seat> seats, List<FlightSchedule> flightSchedules) {
+    public Plane(Long id, String serialNumber, String nameCarrier, Set<Seat> seats, Set<FlightSchedule> flightSchedules) {
         this.id = id;
         this.serialNumber = serialNumber;
         this.nameCarrier = nameCarrier;
@@ -37,13 +38,29 @@ public class Plane {
     }
 
     //////OWN METHODS
-    public void add(){
-        //TODO
+    public void addSeat(Seat seat){
+        if(Objects.nonNull(seat)){
+            this.seats.add(seat);
+        }
+
+    }
+    public void addFlightSchedule(FlightSchedule flightSchedule){
+        if(Objects.nonNull(flightSchedule)){
+            this.flightSchedules.add(flightSchedule);
+        }
 
     }
     public void remove(){
-        //TODO
+        if(Objects.nonNull(flightSchedules) && !flightSchedules.isEmpty()){
+            this.flightSchedules.stream().forEach(t ->  t.setPlane(null));
+        }
 
+        if(Objects.nonNull(seats) && !seats.isEmpty()){
+            this.seats.stream().forEach(t ->{
+                t.remove();
+                t.setPlane(null);
+            });
+        }
     }
 ///GETTER AND SETTER
     public Long getId() {
@@ -70,20 +87,20 @@ public class Plane {
         this.nameCarrier = nameCarrier;
     }
 
-    public List<Seat> getSeats() {
+    public Set<Seat> getSeats() {
         return seats;
     }
 
-    public void setSeats(List<Seat> seats) {
+    public void setSeats(Set<Seat> seats) {
         this.seats = seats;
     }
 
 
-    public List<FlightSchedule> getFlightSchedules() {
+    public Set<FlightSchedule> getFlightSchedules() {
         return flightSchedules;
     }
 
-    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
+    public void setFlightSchedules(Set<FlightSchedule> flightSchedules) {
         this.flightSchedules = flightSchedules;
     }
 
