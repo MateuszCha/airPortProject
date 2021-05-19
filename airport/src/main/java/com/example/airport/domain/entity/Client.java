@@ -3,12 +3,13 @@ package com.example.airport.domain.entity;
 import com.example.airport.domain.enumeration.DocumentType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "client")
-public class Client {
+public class Client  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +33,7 @@ public class Client {
     @Enumerated(value = EnumType.STRING)
     private DocumentType documentType;
 
-    @OneToMany(mappedBy = "client",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "client",orphanRemoval = false,fetch = FetchType.EAGER)
     private Set<Booked> bookedSet;
 
     public Client() {
@@ -49,6 +50,13 @@ public class Client {
         this.documentType = documentType;
         this.bookedSet = bookedSet;
     }
+
+    public void remove(){
+      if(Objects.nonNull(this.bookedSet)){
+            bookedSet.stream().forEach((t)->t.setClient(null));
+        }
+    }
+
 
     public Long getId() {
         return id;
@@ -113,6 +121,7 @@ public class Client {
     public void setBookedSet(Set<Booked> bookedSet) {
         this.bookedSet = bookedSet;
     }
+
 
     @Override
     public boolean equals(Object o) {

@@ -64,6 +64,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         return mapper.map2To(client);
     }
 
+    @Transactional
     @Override
     public ClientDto remove(Long index){
         if(!this.doesIndexProperly(index)){
@@ -73,10 +74,12 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         if(client.isEmpty()){
             throw new NoFoundEntity(INDEX_EXCEPTION + index);
         }
+        client.get().remove();
         repository.delete(client.get());
         return mapper.map2To(client.get());
     }
 
+    @Transactional
     @Override
     public ClientDto update(ClientDto clientDto){
         if(Objects.isNull(clientDto)) //|| validator.isValidUpdate()
@@ -93,7 +96,6 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         client.get().setEmail(clientDto.getEmail());
         client.get().setIdNumber(clientDto.getIdNumber());
         client.get().setDocumentType(clientDto.getDocumentType());
-        repository.save(client.get());
         return mapper.map2To(client.get());
     }
 

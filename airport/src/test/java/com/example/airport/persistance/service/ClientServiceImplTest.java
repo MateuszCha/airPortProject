@@ -29,15 +29,15 @@ public class ClientServiceImplTest {
 
     @Test
     public void addShouldAddElement() {
-        //given
-        ClientDto expect = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
-     //   ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
-        //when
-        ClientDto result = service.add(expect);
-        //then
-        assertNotNull(result);
-        this.compareExpectAndResultDtoTest(expect,result);
-    }
+    //given
+    ClientDto expect = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+    //   ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+    //when
+    ClientDto result = service.add(expect);
+    //then
+    assertNotNull(result);
+    this.compareExpectAndResultDtoTest(expect,result);
+}
     @Test
     public void addShouldAddElementWhenElementOnIndexExistOnDb() {
         //given
@@ -83,7 +83,7 @@ public class ClientServiceImplTest {
         //given
         Long index = 14L;
         ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
-         //when
+        //when
         service.add(clientDto1);
         service.get(index);
         //then
@@ -298,5 +298,4 @@ public class ClientServiceImplTest {
     private ClientDto createClientDto(Long id, String firstName, String surname, String phoneNumber, String email, String idNumber, DocumentType documentType) {
         return ClientDto.builder().withID(id).withFirsName(firstName).withSurname(surname).withPhoneNumber(phoneNumber).withEmail(email).witIdNumber(idNumber).withDocumentType(documentType).build();
     }
-
 }
