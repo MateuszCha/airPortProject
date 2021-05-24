@@ -1,6 +1,7 @@
-package com.example.airport.web.rest;
+package com.example.airport.web.rest.controller;
 
 import com.example.airport.domain.to.ClientDto;
+import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.service.crud.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,12 +26,15 @@ public class ClientRestController {
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<ClientDto> getClient(@PathVariable(value = "id")Long index){
         ClientDto dto = service.get(index);
-        return ResponseEntity.status(HttpStatus.FOUND).body(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<ClientDto>> getClients(){
         List<ClientDto> dto = service.getAll();
-        return ResponseEntity.status(HttpStatus.FOUND).body(dto);
+        if(dto.isEmpty()){
+            throw new NoFoundEntity("clients ");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @PutMapping(produces = "application/json",consumes = "application/json" )
@@ -45,7 +49,7 @@ public class ClientRestController {
         HttpHeaders httpHeaders = new HttpHeaders();
         ClientDto client = service.update(clientDto);
         httpHeaders.setLocation(ucb.path("/client/").path(String.valueOf(client.getId())).build().toUri());
-        return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders).body(client);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).headers(httpHeaders).body(client);
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ClientDto> deleteClient(@PathVariable(value = "id") Long index){
