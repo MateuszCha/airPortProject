@@ -9,6 +9,7 @@ import com.example.airport.persistance.mapper.FlightScheduleMapper;
 import com.example.airport.persistance.repository.FlightScheduleRepository;
 import com.example.airport.persistance.repository.PlaneRepository;
 import com.example.airport.persistance.service.crud.FlightScheduleService;
+import com.example.airport.persistance.validation.FlightScheduleValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,25 +22,28 @@ import java.util.Optional;
 public class FlightScheduleServiceImpl implements FlightScheduleService {
     private final FlightScheduleRepository repository;
     private final FlightScheduleMapper mapper;
-    //private final FlightScheduleValidator validator;
+    private final FlightScheduleValidator validator;
     private final PlaneRepository planeRepository;
+    public static final String INDEX_EXCEPTION_MSG = "Flight schedule on index: ";
 
 
     @Autowired
-    public FlightScheduleServiceImpl(FlightScheduleRepository repository, FlightScheduleMapper mapper, PlaneRepository planeRepository) {
+    public FlightScheduleServiceImpl(FlightScheduleRepository repository, FlightScheduleMapper mapper, FlightScheduleValidator validator, PlaneRepository planeRepository) {
         this.repository = repository;
         this.mapper = mapper;
+        this.validator = validator;
         this.planeRepository = planeRepository;
     }
+
     @Transactional
     @Override
     public FlightScheduleDto get(Long flightIndex) {
         if(!doesIndexProperly(flightIndex)){
-            throw new IllegalIndexEntity("Flight schedule on index: " + flightIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + flightIndex);
         }
         Optional<FlightSchedule> flight = repository.findById(flightIndex);
         if(flight.isEmpty()){
-            throw new NoFoundEntity("Flight schedules on index: " + flightIndex);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + flightIndex);
         }
         return mapper.map2To(flight.get());
 
@@ -54,8 +58,7 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     @Override
     @Transactional
     public FlightScheduleDto add(FlightScheduleDto dto, Long planeIndex) {
-        if(Objects.isNull(dto)) // validator.isUpdate(dto)
-        {
+        if(!validator.addValidate(dto)){
             throw new IllegalArgumentException();
         }
         dto.setId(null);
@@ -76,13 +79,12 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     @Override
     @Transactional
     public FlightScheduleDto update(FlightScheduleDto dto, Long planeIndex) {
-        if(Objects.isNull(dto)) // || validator.isUpdate(dto)
-        {
+        if(!validator.updateValidate(dto)){
             throw new IllegalArgumentException();
         }
         Optional<FlightSchedule> flight = repository.findById(dto.getId());
         if(flight.isEmpty()){
-            throw new NoFoundEntity("Flight schedules on index: " + dto.getId());
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + dto.getId());
         }
 
         flight.get().setName(dto.getName());
@@ -106,11 +108,11 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     @Override
     public FlightScheduleDto remove(Long flightIndex) {
         if(!doesIndexProperly(flightIndex)){
-            throw new IllegalIndexEntity("Flight schedules on index: " + flightIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + flightIndex);
         }
         Optional<FlightSchedule> flight = repository.findById(flightIndex);
         if(flight.isEmpty()){
-            throw new NoFoundEntity("Flight schedules on index: " + flightIndex);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + flightIndex);
         }
         FlightScheduleDto flightScheduleDto =  mapper.map2To(flight.get());
         repository.delete(flight.get());

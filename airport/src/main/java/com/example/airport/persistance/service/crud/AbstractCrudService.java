@@ -2,10 +2,12 @@ package com.example.airport.persistance.service.crud;
 
 import java.util.List;
 
-public interface AbstractCrudService<Index,T> {
-    T get(Index index);
+public interface AbstractCrudService<INDEX,T> {
+    T get(INDEX index);
     List<T> getAll();
     T add(T dto);
     T update(T dto);
-    T remove(Index index);
+    T remove(INDEX index);
+
+
 }

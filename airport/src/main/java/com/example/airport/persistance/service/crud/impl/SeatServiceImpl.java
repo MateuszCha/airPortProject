@@ -9,6 +9,7 @@ import com.example.airport.persistance.mapper.SeatMapper;
 import com.example.airport.persistance.repository.PlaneRepository;
 import com.example.airport.persistance.repository.SeatRepository;
 import com.example.airport.persistance.service.crud.SeatService;
+import com.example.airport.persistance.validation.SeatValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +23,15 @@ public class SeatServiceImpl implements SeatService {
 
     private final SeatRepository repository;
     private final SeatMapper mapper;
-    //private final SeatValidator validation;
+    private final SeatValidator validator;
     private final PlaneRepository planeRepository;
+    public static final String INDEX_EXCEPTION_MSG = "Seat on index :";
 
     @Autowired
-    public SeatServiceImpl(SeatRepository repository, SeatMapper mapper, PlaneRepository planeRepository) {
+    public SeatServiceImpl(SeatRepository repository, SeatMapper mapper, SeatValidator validator, PlaneRepository planeRepository) {
         this.repository = repository;
         this.mapper = mapper;
+        this.validator = validator;
         this.planeRepository = planeRepository;
     }
 
@@ -36,11 +39,11 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public SeatDto get(Long seatIndex) {
         if(!this.doesIndexProperly(seatIndex)){
-            throw new IllegalIndexEntity("seat index : " + seatIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + seatIndex);
         }
         Optional<Seat> seat = repository.findById(seatIndex);
         if(seat.isEmpty()){
-            throw new NoFoundEntity("Seat on index: " + seat);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + seatIndex);
         }
         return mapper.map2To(seat.get());
     }
@@ -55,8 +58,7 @@ public class SeatServiceImpl implements SeatService {
     @Override
     @Transactional
     public SeatDto add(SeatDto dto, Long planeIndex) {
-        if(Objects.isNull(dto)) // || validator.isAdd(dto)
-        {
+        if(!validator.addValidate(dto)){
             throw new IllegalArgumentException();
         }
         dto.setId(null);
@@ -64,11 +66,11 @@ public class SeatServiceImpl implements SeatService {
         if(doesIndexProperly(planeIndex)){
             Optional<Plane> plane = planeRepository.findById(planeIndex);
             if(plane.isEmpty()){
-                throw new NoFoundEntity("plane index : " + planeIndex);
+                throw new NoFoundEntity(PlaneServiceImpl.INDEX_EXCEPTION_MSG + planeIndex);
             }
             seat.setPlane(plane.get());
         }else {
-            throw new IllegalIndexEntity("plane index : " + planeIndex);
+            throw new IllegalIndexEntity(PlaneServiceImpl.INDEX_EXCEPTION_MSG  + planeIndex);
         }
         repository.save(seat);
         return mapper.map2To(seat);
@@ -77,13 +79,12 @@ public class SeatServiceImpl implements SeatService {
     @Override
     @Transactional
     public SeatDto update(SeatDto dto, Long planeIndex) {
-        if(Objects.isNull(dto)) // || validator.isUpdate(dto)
-        {
+        if(!validator.updateValidate(dto)){
             throw new IllegalArgumentException();
         }
         Optional<Seat> seat = repository.findById(dto.getId());
         if(seat.isEmpty()){
-            throw new NoFoundEntity("Seat index :" + dto.getId());
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + dto.getId());
         }
         seat.get().setRow(dto.getRow());
         seat.get().setColumn(dto.getColumn());
@@ -93,7 +94,7 @@ public class SeatServiceImpl implements SeatService {
         if(doesIndexProperly(planeIndex)){
             Optional<Plane> plane = planeRepository.findById(planeIndex);
             if(plane.isEmpty()){
-                throw new NoFoundEntity("plane on index: " + planeIndex);
+                throw new NoFoundEntity(PlaneServiceImpl.INDEX_EXCEPTION_MSG + planeIndex);
             }
             seat.get().setPlane(plane.get());
         }
@@ -106,16 +107,15 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public SeatDto remove(Long seatIndex) {
         if(!doesIndexProperly(seatIndex)){
-            throw new IllegalIndexEntity("seat index: " + seatIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + seatIndex);
         }
         Optional<Seat> seat = repository.findById(seatIndex);
         if(seat.isEmpty()){
-            throw new NoFoundEntity("seat index: " + seatIndex);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + seatIndex);
         }
         seat.get().remove();
         repository.delete(seat.get());
-        SeatDto seatDto = mapper.map2To(seat.get());
-        return seatDto;
+        return mapper.map2To(seat.get());
     }
 
     /**

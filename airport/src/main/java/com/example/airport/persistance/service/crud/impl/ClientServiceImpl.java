@@ -9,6 +9,7 @@ import com.example.airport.persistance.mapper.ClientMapper;
 import com.example.airport.persistance.repository.ClientRepository;
 import com.example.airport.persistance.service.crud.AbstractCrudService;
 import com.example.airport.persistance.service.crud.ClientService;
+import com.example.airport.persistance.validation.ClientValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +22,14 @@ import java.util.Optional;
 public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, ClientService {
 
     private final ClientMapper mapper;
-   // private final ClientValidator validator;
+    private final ClientValidator validator;
     private final ClientRepository repository;
-    private static final String INDEX_EXCEPTION = "entity on index: ";
+    public static final String INDEX_EXCEPTION_MSG = "client on index: ";
 
     @Autowired
-    public ClientServiceImpl(ClientMapper mapper, ClientRepository repository) {
+    public ClientServiceImpl(ClientMapper mapper, ClientValidator validator, ClientRepository repository) {
         this.mapper = mapper;
+        this.validator = validator;
         this.repository = repository;
     }
 
@@ -39,7 +41,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         }
         Optional<Client> client = repository.findById(index);
         if(client.isEmpty()){
-            throw new NoFoundEntity(INDEX_EXCEPTION + index);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + index);
         }
         return mapper.map2To(client.get());
     }
@@ -54,8 +56,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
     @Transactional
     @Override
     public ClientDto add(ClientDto clientDto){
-        if(Objects.isNull(clientDto) )  //|| validator.isValidAdd)
-        {
+        if(!validator.addValidate(clientDto)){
             throw new IllegalArgumentException();
         }
         clientDto.setId(null);
@@ -72,7 +73,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         }
         Optional<Client> client = repository.findById(index);
         if(client.isEmpty()){
-            throw new NoFoundEntity(INDEX_EXCEPTION + index);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + index);
         }
         client.get().remove();
         repository.delete(client.get());
@@ -82,13 +83,12 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
     @Transactional
     @Override
     public ClientDto update(ClientDto clientDto){
-        if(Objects.isNull(clientDto)) //|| validator.isValidUpdate()
-        {
+        if(!validator.updateValidate(clientDto)){
             throw new IllegalArgumentException();
         }
         Optional<Client> client = repository.findById(clientDto.getId());
         if(client.isEmpty()){
-            throw new NoFoundEntity(INDEX_EXCEPTION + clientDto.getId());
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + clientDto.getId());
         }
         client.get().setFirstName(clientDto.getFirstName());
         client.get().setSurname(clientDto.getSurname());

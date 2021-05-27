@@ -11,6 +11,7 @@ import com.example.airport.persistance.repository.BookedRepository;
 import com.example.airport.persistance.repository.ClientRepository;
 import com.example.airport.persistance.repository.SeatRepository;
 import com.example.airport.persistance.service.crud.BookedService;
+import com.example.airport.persistance.validation.BookedValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,31 +23,32 @@ import java.util.Optional;
 @Service
 public class BookedServiceImpl implements BookedService {
 
-
     private final BookedMapper mapper;
     private final BookedRepository repository;
     private final ClientRepository clientRepository;
     private final SeatRepository seatRepository;
-   // private final BookedValidator validator;
+    private final BookedValidator validator;
+    public static final String INDEX_EXCEPTION_MSG = "Booked on index: ";
 
 
     @Autowired
-    public BookedServiceImpl(BookedMapper mapper, BookedRepository repository, ClientRepository clientRepository, SeatRepository seatRepository) {
+    public BookedServiceImpl(BookedMapper mapper, BookedRepository repository, ClientRepository clientRepository, SeatRepository seatRepository, BookedValidator validator) {
         this.mapper = mapper;
         this.repository = repository;
         this.clientRepository = clientRepository;
         this.seatRepository = seatRepository;
+        this.validator = validator;
     }
 
     @Transactional
     @Override
     public BookedDto get(Long index) {
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("client index:" + index);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + index);
         }
         Optional<Booked> booked = repository.findById(index);
         if(booked.isEmpty()){
-            throw new NoFoundEntity("client on index: " + index);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + index);
         }
         return mapper.map2To(booked.get());
     }
@@ -61,8 +63,7 @@ public class BookedServiceImpl implements BookedService {
     @Override
     @Transactional
     public BookedDto add(BookedDto dto, Long clientIndex, Long seatIndex) {
-        if (Objects.isNull(dto))  //|| validator.isValidAdd(dto)
-        {
+        if (!validator.addValidate(dto)){
             throw new IllegalArgumentException();
         }
         dto.setId(null);
@@ -70,11 +71,11 @@ public class BookedServiceImpl implements BookedService {
         if(doesIndexProperly(clientIndex)){
             Optional<Client> client = clientRepository.findById(clientIndex);
             if(client.isEmpty()){
-                throw new NoFoundEntity("client on index : " + clientIndex);
+                throw new NoFoundEntity(INDEX_EXCEPTION_MSG + clientIndex);
             }
             booked.setClient(client.get());
         }else{
-            throw new IllegalIndexEntity("client on index:" + clientIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + clientIndex);
         }
         if(doesIndexProperly(seatIndex)){
             Optional<Seat> seat = seatRepository.findById(seatIndex);
@@ -92,8 +93,7 @@ public class BookedServiceImpl implements BookedService {
     @Override
     @Transactional
     public BookedDto update(BookedDto dto, Long clientIndex, Long seatIndex) {
-        if(Objects.isNull(dto)) //|| validator.isValidUpdate()
-        {
+        if(!validator.updateValidate(dto)){
             throw new IllegalArgumentException();
         }
         Optional<Booked> booked = repository.findById(dto.getId());

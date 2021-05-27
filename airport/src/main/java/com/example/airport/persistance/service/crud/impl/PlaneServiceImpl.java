@@ -8,6 +8,7 @@ import com.example.airport.persistance.mapper.PlaneMapper;
 import com.example.airport.persistance.repository.PlaneRepository;
 import com.example.airport.persistance.service.crud.AbstractCrudService;
 import com.example.airport.persistance.service.crud.PlaneService;
+import com.example.airport.persistance.validation.PlaneValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,26 +20,27 @@ import java.util.Optional;
 @Service
 public class PlaneServiceImpl implements AbstractCrudService<Long, PlaneDto>, PlaneService {
 
-private final PlaneRepository repository;
-private final PlaneMapper mapper;
-//private final PlaneValidator validator;
-
+    private final PlaneRepository repository;
+    private final PlaneMapper mapper;
+    private final PlaneValidator validator;
+    public static final String INDEX_EXCEPTION_MSG = "Plane on index :";
 
     @Autowired
-    public PlaneServiceImpl(PlaneRepository repository, PlaneMapper mapper) {
+    public PlaneServiceImpl(PlaneRepository repository, PlaneMapper mapper, PlaneValidator validator) {
         this.repository = repository;
         this.mapper = mapper;
+        this.validator = validator;
     }
 
     @Transactional
     @Override
     public PlaneDto get(Long planeIndex) {
         if(!doesIndexProperly(planeIndex)){
-            throw new IllegalIndexEntity("plane index :" + planeIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + planeIndex);
         }
         Optional<Plane> plane = repository.findById(planeIndex);
         if(plane.isEmpty()){
-            throw new NoFoundEntity("plane index: " + planeIndex);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + planeIndex);
         }
         return mapper.map2To(plane.get());
     }
@@ -53,7 +55,7 @@ private final PlaneMapper mapper;
     @Transactional
     @Override
     public PlaneDto add(PlaneDto dto) {
-        if(Objects.isNull(dto)){ // || validator.isAdd(dto))
+        if(! validator.addValidate(dto)){
             throw new IllegalArgumentException();
         }
         dto.setId(null);
@@ -66,13 +68,12 @@ private final PlaneMapper mapper;
     @Transactional
     @Override
     public PlaneDto update(PlaneDto dto) {
-        if(Objects.isNull(dto))// || validate.isUpdate(dto))
-        {
+        if(!validator.updateValidate(dto)){
             throw new IllegalArgumentException();
         }
         Optional<Plane> plane = repository.findById(dto.getId());
         if(plane.isEmpty()){
-            throw new NoFoundEntity("plane on index :" + dto.getId());
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + dto.getId());
         }
         plane.get().setSerialNumber(dto.getSerialNumber());
         plane.get().setNameCarrier(dto.getNameCarrier());
@@ -84,16 +85,15 @@ private final PlaneMapper mapper;
     @Override
     public PlaneDto remove(Long planeIndex) {
         if(!doesIndexProperly(planeIndex)){
-            throw new IllegalIndexEntity("plane on index :" + planeIndex);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + planeIndex);
         }
         Optional<Plane> plane = repository.findById(planeIndex);
         if(plane.isEmpty()){
-            throw new NoFoundEntity("plane on index:" + planeIndex);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + planeIndex);
         }
         plane.get().remove();
         repository.delete(plane.get());
-        PlaneDto planeDto = mapper.map2To(plane.get());
-        return planeDto;
+        return mapper.map2To(plane.get());
     }
     /**
      *  check parameter index is properly. This means that is more than one and object is not null;
