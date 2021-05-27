@@ -78,6 +78,18 @@ public class SeatDto {
     }
 
     @Override
+    public String toString() {
+        return "SeatDto{" +
+                "id=" + id +
+                ", row=" + row +
+                ", column=" + column +
+                ", categoryType=" + categoryType +
+                ", position=" + position +
+                ", enable=" + enable +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
