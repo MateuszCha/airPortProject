@@ -323,7 +323,7 @@ public class SeatServiceImplTest {
         service.update(null,1L);
         //then
     }
-    @Test(expected = NoFoundEntity.class)
+    @Test(expected = IllegalArgumentException.class)
     public void updateShouldThrowExceptionWhenPlaneIndexIsNoExist() {
         //given
         SeatDto seatDto1 = this.createSeatDto(1L,1,1,CategoryType.BUSINESS,SeatPosition.LEFT,true);

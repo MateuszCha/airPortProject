@@ -60,7 +60,7 @@ public class BookedServiceImplTest {
     public void addShouldAddElement() {
         //given
         List<Plane> planes = planeRepository.findAll();
-        BookedDto expect = this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto expect = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
          //when
         BookedDto result = service.add(expect,1L,2L);
         //then
@@ -70,8 +70,8 @@ public class BookedServiceImplTest {
     @Test
     public void addShouldAddElementWhenElementOnIndexExistOnDb() {
         //given
-        BookedDto bookedDto1 = this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto expect = this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto expect = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         //when
         List<BookedDto> beforeAdd = service.getAll();
         service.add(bookedDto1,1L,2L);
@@ -95,8 +95,8 @@ public class BookedServiceImplTest {
     public void getShouldReturnElementOnIndex() {
         //given
         Long index = 2L;
-        BookedDto bookedDto1 = this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto expect =  this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto expect =  this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         //when
         service.add(bookedDto1,1L,1L);
         service.add(expect,1L,2L);
@@ -111,7 +111,7 @@ public class BookedServiceImplTest {
     public void getShouldThrowExceptionWhenNotFindElement() {
         //given
         Long index = 14L;
-        BookedDto bookedDto =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
         //when
         service.add(bookedDto,1L,1L);
         service.get(index);
@@ -121,7 +121,7 @@ public class BookedServiceImplTest {
     public void getShouldThrowExceptionWhenIndexIsLessThanOne() {
         //given
         Long index = 0L;
-        BookedDto bookedDto =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
         //when
         service.add(bookedDto,2L,2L);
         service.get(index);
@@ -131,7 +131,7 @@ public class BookedServiceImplTest {
     public void getShouldThrowExceptionWhenIndexIsLessThanZero() {
         //given
         Long index = Long.MIN_VALUE;
-        BookedDto bookedDto = this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
         //when
         service.add(bookedDto,1L,2L);
         service.get(index);
@@ -141,7 +141,7 @@ public class BookedServiceImplTest {
     public void getShouldThrowExceptionWhenIndexIsNull() {
         //given
         Long index = null;
-        BookedDto bookedDto = this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
         //when
         service.add(bookedDto,1L,2L);
         service.get(index);
@@ -159,8 +159,8 @@ public class BookedServiceImplTest {
     @Test
     public void getAllShouldReturnAllElement() {
         //given
-        BookedDto bookedDto1 =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto bookedDto2 = this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         //when
         service.add(bookedDto1,2L,2L);
         service.add(bookedDto2,1L,2L);
@@ -186,8 +186,8 @@ public class BookedServiceImplTest {
     @Test
     public void removeShouldRemoveElement() {
         //given
-        BookedDto bookedDto1 =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto bookedDto2 = this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         Long removeIndex = 2L;
         //when
         service.add(bookedDto1,2L,2L);
@@ -206,7 +206,7 @@ public class BookedServiceImplTest {
     @Test (expected = NoFoundEntity.class)
     public void removeShouldThrowExceptionWhenIndexNotExist() {
         //given
-        BookedDto bookedDto = this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
         Long removeIndex = 4L;
         //when
         service.add(bookedDto,2L,2L);
@@ -251,8 +251,8 @@ public class BookedServiceImplTest {
     @Test
     public void updateShouldUpdateElement() {
         //given
-        BookedDto bookedDto1 =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto bookedDto2 = this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         //when
         service.add(bookedDto1,1L,2L);
         BookedDto expect = service.add(bookedDto2,1L,2L);
@@ -271,8 +271,8 @@ public class BookedServiceImplTest {
     @Test(expected = NoFoundEntity.class)
     public void updateShouldThrowExceptionWhenIdNoExist() {
         //given
-        BookedDto bookedDto1 =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto bookedDto2 = this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         //when
         service.add(bookedDto1,1L,2L);
         BookedDto expect = service.add(bookedDto2,1L,2L);
@@ -285,8 +285,8 @@ public class BookedServiceImplTest {
     @Test(expected = IllegalArgumentException.class)
     public void updateShouldThrowExceptionWhenElementIsNull() {
         //given
-        BookedDto bookedDto1 =  this.createBookedDto(1L,34L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
-        BookedDto bookedDto2 = this.createBookedDto(2L,12L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
         //when
         service.add(bookedDto1,1L,2L);
         service.add(bookedDto2,1L,1L);

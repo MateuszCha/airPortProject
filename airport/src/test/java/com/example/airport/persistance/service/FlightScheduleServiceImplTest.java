@@ -322,7 +322,6 @@ public class FlightScheduleServiceImplTest {
         assertNull(dto.getFlyType());
     }
     private void compareFlightSchedulesDto(FlightScheduleDto expect, FlightScheduleDto result){
-        assertEquals(expect.getId(), result.getId());
         assertEquals(expect.getName(), result.getName());
         assertEquals(expect.getStartTime(), result.getStartTime());
         assertEquals(expect.getArriveTime(), result.getArriveTime());
