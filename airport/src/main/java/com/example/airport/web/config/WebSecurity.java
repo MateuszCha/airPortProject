@@ -33,21 +33,30 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-       http.authorizeRequests().mvcMatchers("/h2").permitAll().and().authorizeRequests().antMatchers("/h2/**").permitAll();
-       http.authorizeRequests().antMatchers("/client","/client/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER");
-       http.authorizeRequests().antMatchers(HttpMethod.GET,"/seat","/seat/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER")
+      http.authorizeRequests().mvcMatchers("/h2").permitAll().and().authorizeRequests().antMatchers("/h2/**").permitAll()
+              .and()
+              .authorizeRequests().antMatchers("/client","/client/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER")
+              .and()
+              .authorizeRequests().antMatchers(HttpMethod.GET,"/seat","/seat/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER")
+              .and()
+              .authorizeRequests().antMatchers("/seat","/seat/**").hasRole("ADMIN")
+              .and()
+              .authorizeRequests().antMatchers(HttpMethod.GET,"/plane","/plane/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER")
                .and()
-               .authorizeRequests().antMatchers("/seat","/seat/**").hasRole("ADMIN");
-       http.authorizeRequests().antMatchers(HttpMethod.GET,"/plane","/plane/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER")
-                .and()
-               .authorizeRequests().antMatchers("/plane","/plane/**").hasRole("ADMIN");
-       http.authorizeRequests().antMatchers("/booked","/booked/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER");
-       http.authorizeRequests().antMatchers("/schedule", "/schedule/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SCHEDULER");
-       http.requiresChannel().antMatchers("/client","/client/**","/plane","/plane/**").requiresSecure();
-       http.authorizeRequests().antMatchers("/").permitAll();
+              .authorizeRequests().antMatchers("/plane","/plane/**").hasRole("ADMIN")
+              .and()
+              .authorizeRequests().antMatchers("/booked","/booked/**").hasAnyAuthority("ROLE_ADMIN","ROLE_DEALER")
+              .and()
+              .authorizeRequests().antMatchers("/schedule", "/schedule/**").hasAnyAuthority("ROLE_ADMIN","ROLE_SCHEDULER")
+              .and()
+           //   .requiresChannel().antMatchers("/client","/client/**","/plane","/plane/**").requiresSecure()
+           //   .and()
+              .authorizeRequests().antMatchers("/").permitAll();
        http.httpBasic().authenticationEntryPoint(entryPoint);
-       http.formLogin().permitAll().and()
-                .logout().permitAll();
+       http.formLogin().disable();
+       http.logout().permitAll();
+
+
 
        http.csrf().disable();
        http.headers().frameOptions().disable();
