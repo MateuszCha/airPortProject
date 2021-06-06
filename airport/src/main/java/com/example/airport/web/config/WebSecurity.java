@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-// this is configuration class to testing h2
 @Configuration
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
