@@ -2,7 +2,7 @@ package com.example.airport.domain.to;
 
 import java.util.Objects;
 
-public class PlaneDto {
+public class PlaneDto extends AbstractTo{
     private Long id;
     private String serialNumber;
     private String nameCarrier;
@@ -10,7 +10,8 @@ public class PlaneDto {
     public PlaneDto() {
     }
 
-    public PlaneDto(Long id, String serialNumber, String nameCarrier) {
+    public PlaneDto(Long id, String serialNumber, String nameCarrier,int version) {
+        super.setVersion(version);
         this.id = id;
         this.serialNumber = serialNumber;
         this.nameCarrier = nameCarrier;
@@ -62,6 +63,7 @@ public class PlaneDto {
         private Long id;
         private String serialNumber;
         private String nameCarrier;
+        private int version;
 
         public PlaneDtoBuilder() {
 
@@ -80,8 +82,12 @@ public class PlaneDto {
             this.nameCarrier = nameCarrier;
             return this;
         }
+        public PlaneDtoBuilder withVersion(int version){
+            this.version = version;
+            return this;
+        }
         public PlaneDto build(){
-            return new PlaneDto(id,serialNumber,nameCarrier);
+            return new PlaneDto(id,serialNumber,nameCarrier,version);
         }
 
     }

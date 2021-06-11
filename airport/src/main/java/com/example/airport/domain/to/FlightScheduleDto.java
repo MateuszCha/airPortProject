@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-public class FlightScheduleDto {
+public class FlightScheduleDto extends AbstractTo{
     private Long id;
     private String name;
     private LocalDateTime startTime;
@@ -18,7 +18,8 @@ public class FlightScheduleDto {
     public FlightScheduleDto() {
     }
 
-    private FlightScheduleDto(Long id, String name, LocalDateTime startTime, LocalDateTime arriveTime, String description, String destination, FlyType flyType) {
+    private FlightScheduleDto(Long id, String name, LocalDateTime startTime, LocalDateTime arriveTime, String description, String destination, FlyType flyType,int version) {
+        super.setVersion(version);
         this.id = id;
         this.name = name;
         if(Objects.nonNull(startTime)) {
@@ -118,6 +119,7 @@ public class FlightScheduleDto {
     public int hashCode() {
         return Objects.hash(id, name, startTime, arriveTime, description, destination, flyType);
     }
+
     public static class FlightScheduleDtoBuilder {
         private Long id;
         private String name;
@@ -126,6 +128,7 @@ public class FlightScheduleDto {
         private String description;
         private String destination;
         private FlyType flyType;
+        private int version;
 
         public FlightScheduleDtoBuilder() {
             //default const...
@@ -159,8 +162,13 @@ public class FlightScheduleDto {
             this.flyType = flyType;
             return this;
         }
+
+        public FlightScheduleDtoBuilder withVersion(int version){
+            this.version = version;
+            return this;
+        }
         public FlightScheduleDto build(){
-            return new FlightScheduleDto(id,name,startTime, arriveTime,description,destination,flyType);
+            return new FlightScheduleDto(id,name,startTime, arriveTime,description,destination,flyType,version);
         }
     }
 }

@@ -3,7 +3,7 @@ package com.example.airport.domain.to;
 import com.example.airport.domain.enumeration.DocumentType;
 import java.util.Objects;
 
-public class ClientDto {
+public class ClientDto extends AbstractTo{
     private Long id;
     private String firstName;
     private String surname;
@@ -15,7 +15,8 @@ public class ClientDto {
     public ClientDto() {
     }
 
-    public ClientDto(Long id, String firstName, String surname, String phoneNumber, String email, String idNumber, DocumentType documentType) {
+    public ClientDto(Long id, String firstName, String surname, String phoneNumber, String email, String idNumber, DocumentType documentType,int version) {
+        super(version);
         this.id = id;
         this.firstName = firstName;
         this.surname = surname;
@@ -103,19 +104,6 @@ public class ClientDto {
         return Objects.hash(id, firstName, surname, phoneNumber, email, idNumber, documentType);
     }
 
-    @Override
-    public String toString() {
-        return "ClientDto{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", surname='" + surname + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", email='" + email + '\'' +
-                ", idNumber='" + idNumber + '\'' +
-                ", documentType=" + documentType +
-                '}';
-    }
-
     public static class ClientDtoBuilder{
         private Long id;
         private String firstName;
@@ -124,6 +112,7 @@ public class ClientDto {
         private String email;
         private String idNumber;
         private DocumentType documentType;
+        private int version;
 
         public ClientDtoBuilder() {
             //default const...
@@ -157,8 +146,13 @@ public class ClientDto {
             this.documentType = documentType;
             return this;
         }
+
+        public ClientDtoBuilder withVersion(int version){
+            this.version = version;
+            return this;
+        }
         public ClientDto build(){
-            return new ClientDto(id,firstName,surname,phoneNumber,email,idNumber,documentType);
+            return new ClientDto(id,firstName,surname,phoneNumber,email,idNumber,documentType,version);
         }
     }
 

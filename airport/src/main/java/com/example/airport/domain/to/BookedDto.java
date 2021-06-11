@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-public class BookedDto {
+public class BookedDto extends AbstractTo {
     private Long id;
     private Long reservationNumber;
     private Double price;
@@ -18,7 +18,8 @@ public class BookedDto {
     public BookedDto() {
     }
 
-    public BookedDto(Long id, Long reservationNumber, Double price, SoldType soldType, BookedState bookedState, LocalDateTime buyingDate) {
+    public BookedDto(Long id, Long reservationNumber, Double price, SoldType soldType, BookedState bookedState, LocalDateTime buyingDate,int version) {
+        super.setVersion(version);
         this.id = id;
         this.reservationNumber = reservationNumber;
         this.price = price;
@@ -109,6 +110,7 @@ public class BookedDto {
         private SoldType soldType;
         private BookedState bookedState;
         private LocalDateTime buyingDate;
+        private int version;
 
         public BookedDtoBuilder() {
             //default const...
@@ -137,8 +139,13 @@ public class BookedDto {
             this.buyingDate = buyingDate;
             return this;
         }
+
+        public BookedDtoBuilder withVersion(int version){
+            this.version = version;
+            return this;
+        }
         public BookedDto build(){
-            return new BookedDto(id,reservationNumber,price,soldType,bookedState,buyingDate);
+            return new BookedDto(id,reservationNumber,price,soldType,bookedState,buyingDate,version);
         }
     }
 }

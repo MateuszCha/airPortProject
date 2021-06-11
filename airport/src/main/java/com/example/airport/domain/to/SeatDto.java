@@ -5,7 +5,7 @@ import com.example.airport.domain.enumeration.SeatPosition;
 
 import java.util.Objects;
 
-public class SeatDto {
+public class SeatDto extends AbstractTo{
     private Long id;
     private Integer row;
     private Integer column;
@@ -16,13 +16,14 @@ public class SeatDto {
     public SeatDto() {
     }
 
-    public SeatDto(Long id, Integer row, Integer column, CategoryType categoryType, SeatPosition position, Boolean enable) {
+    public SeatDto(Long id, Integer row, Integer column, CategoryType categoryType, SeatPosition position, Boolean enable,int version) {
         this.id = id;
         this.row = row;
         this.column = column;
         this.categoryType = categoryType;
         this.position = position;
         this.enable = enable;
+        super.setVersion(version);
     }
 
     public static SeatDtoBuilder builder(){
@@ -78,18 +79,6 @@ public class SeatDto {
     }
 
     @Override
-    public String toString() {
-        return "SeatDto{" +
-                "id=" + id +
-                ", row=" + row +
-                ", column=" + column +
-                ", categoryType=" + categoryType +
-                ", position=" + position +
-                ", enable=" + enable +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -114,6 +103,7 @@ public class SeatDto {
         private CategoryType categoryType;
         private SeatPosition position;
         private Boolean enable;
+        private int version;
 
         public SeatDtoBuilder() {
             //default const...
@@ -142,8 +132,12 @@ public class SeatDto {
             this.enable = enableSeat;
             return this;
         }
+        public SeatDtoBuilder withVersion(int version){
+            this.version = version;
+            return this;
+        }
         public SeatDto build(){
-            return new SeatDto(id,row,column,categoryType,position,enable);
+            return new SeatDto(id,row,column,categoryType,position,enable,version);
         }
     }
 }
