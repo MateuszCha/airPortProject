@@ -3,6 +3,7 @@ package com.example.airport.persistance.service.crud.impl;
 import com.example.airport.domain.entity.FlightSchedule;
 import com.example.airport.domain.entity.Plane;
 import com.example.airport.domain.to.FlightScheduleDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.FlightScheduleMapper;
@@ -86,7 +87,7 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
         if(flight.isEmpty()){
             throw new NoFoundEntity(INDEX_EXCEPTION_MSG + dto.getId());
         }
-
+        this.doesTheSameVersion(dto.getVersion(),flight.get().getVersion());
         flight.get().setName(dto.getName());
         flight.get().setStartTime(dto.getStartTime());
         flight.get().setArriveTime(dto.getArriveTime());
@@ -118,6 +119,22 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
         repository.delete(flight.get());
         return flightScheduleDto;
     }
+
+    @Override
+    public FlightScheduleDto setToRemove(Long flightIndex) {
+        if(!doesIndexProperly(flightIndex)){
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + flightIndex);
+        }
+        Optional<FlightSchedule> flight = repository.findById(flightIndex);
+        if(flight.isEmpty()){
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + flightIndex);
+        }
+        FlightScheduleDto flightScheduleDto =  mapper.map2To(flight.get());
+        flight.get().setRemove(true);
+        repository.save(flight.get());
+        return flightScheduleDto;
+    }
+
     /**
      *  check parameter index is properly. This means that is more than one and object is not null;
      * @param index description index in database
@@ -125,5 +142,10 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
      */
     private boolean doesIndexProperly(Long index){
         return !(Objects.isNull(index) || index < 1);
+    }
+    private void doesTheSameVersion(int versionDto, int versionEntity){
+        if(versionDto != versionEntity) {
+            throw new DifferentVersion("Your version : " + versionDto + " server version : " + versionEntity);
+        }
     }
 }

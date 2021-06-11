@@ -1,10 +1,12 @@
 package com.example.airport.persistance.service;
 
 import com.example.airport.domain.entity.Client;
+import com.example.airport.domain.entity.FlightSchedule;
 import com.example.airport.domain.entity.Plane;
 import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.enumeration.*;
 import com.example.airport.domain.to.FlightScheduleDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.repository.BookedRepository;
@@ -93,9 +95,33 @@ public class FlightScheduleServiceImplTest {
     @Test(expected = IllegalArgumentException.class)
     public void addShouldThrowExceptionWhenElementIsNull() {
         //given
-        FlightScheduleDto dto1 = null;
+        FlightScheduleDto dto = null;
         //when
-        service.add(dto1,1L);
+        service.add(dto,1L);
+        //then
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void addShouldThrowExceptionWhenNoFoundPlane() {
+        //given
+        FlightScheduleDto dto = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        //when
+        service.add(dto,14L);
+        //then
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void addShouldThrowExceptionWhenPlaneIndexIsLessThanOne() {
+        //given
+        FlightScheduleDto dto = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        //when
+        service.add(dto,0L);
+        //then
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void addShouldThrowExceptionWhenPlaneIndexIsNull() {
+        //given
+        FlightScheduleDto dto = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        //when
+        service.add(dto,null);
         //then
     }
 
@@ -299,6 +325,119 @@ public class FlightScheduleServiceImplTest {
         service.add(flightScheduleDto2,1L);
         service.update(null,null);
         //then
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void updateShouldThrowExceptionWhenPlaneIsNotFound() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        //when
+        service.add(flightScheduleDto1,2L);
+        FlightScheduleDto expect = service.add(flightScheduleDto2,1L);
+        expect.setDestination("jakiesTam");
+        service.update(expect,21L);
+        //then
+    }
+    @Test
+    public void updateShouldUpdateElementWhenPlaneIndexIsSet() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        //when
+        service.add(flightScheduleDto1,2L);
+        FlightScheduleDto expect = service.add(flightScheduleDto2,2L);
+        expect.setArriveTime(LocalDateTime.now().plusHours(15));
+        expect.setDescription("lubie placki");
+        expect.setDestination("Ale Co sie stalosie xD");
+        List<FlightScheduleDto> beforeUpdate = service.getAll();
+        FlightScheduleDto result = service.update(expect,1L);
+        List<FlightScheduleDto> afterUpdate = service.getAll();
+        //then
+        assertNotNull(result);
+        assertEquals(beforeUpdate.size(), afterUpdate.size());
+        assertEquals(expect.getVersion(),result.getVersion());
+        this.compareFlightSchedulesDto(beforeUpdate.get(0),afterUpdate.get(0));
+        this.compareFlightSchedulesDto(afterUpdate.get(1),result);
+    }
+
+    @Test
+    public void updateShouldChangeVersionWhenUpdateExistObject() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        //when
+        service.add(flightScheduleDto1,2L);
+        FlightScheduleDto expect = service.add(flightScheduleDto2,1L);
+        expect.setDestination("gdziesTam");
+        List<FlightScheduleDto> beforeUpdate = service.getAll();
+        service.update(expect,null);
+        List<FlightScheduleDto> afterUpdate = service.getAll();
+        FlightScheduleDto result = service.get(expect.getId());
+        //then
+        assertNotNull(result);
+        assertEquals(beforeUpdate.size(), afterUpdate.size());
+        this.compareFlightSchedulesDto(beforeUpdate.get(0),afterUpdate.get(0));
+        this.compareFlightSchedulesDto(afterUpdate.get(1),result);
+        assertEquals(expect.getVersion() + 1, result.getVersion());
+    }
+    @Test(expected = DifferentVersion.class)
+    public void updateShouldThrowExceptionWhenVersionIsDifferent() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        //when
+        service.add(flightScheduleDto1,2L);
+        FlightScheduleDto expect = service.add(flightScheduleDto2,1L);
+        expect.setVersion(23);
+        service.update(expect,null);
+    }
+    @Test
+    public void setToRemoveShouldSetElementToRemove() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        service.add(flightScheduleDto1,2L);
+        service.add(flightScheduleDto2,1L);
+        //when
+        service.setToRemove(2L);
+        List<FlightScheduleDto> expect = service.getAll();
+        //then
+        assertEquals(2,expect.size());
+        assertEquals(false,expect.get(0).isRemove());
+        assertEquals(true,expect.get(1).isRemove());
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIndexIsLessThanOne() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        service.add(flightScheduleDto1,2L);
+        service.add(flightScheduleDto2,1L);
+        //when
+        service.setToRemove(0L);
+
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIndexIsLessThanZero() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        service.add(flightScheduleDto1,2L);
+        service.add(flightScheduleDto2,1L);
+        //when
+        service.setToRemove(-1L);
+
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIEntityNotFound() {
+        //given
+        FlightScheduleDto flightScheduleDto1 = this.createFlightScheduleDto(1L,"alfa",LocalDateTime.now(),LocalDateTime.now().plusHours(12L),"opis","Wroclaw",FlyType.LOCAL);
+        FlightScheduleDto flightScheduleDto2 = this.createFlightScheduleDto(2L,"beta",LocalDateTime.now(),LocalDateTime.now().plusHours(2L),"opis2","Wroclaw2",FlyType.INTERNATIONAL);
+        service.add(flightScheduleDto1,2L);
+        service.add(flightScheduleDto2,1L);
+        //when
+        service.setToRemove(3L);
+
     }
 
     private void checkAllParametersInDtoAreNotNull(FlightScheduleDto dto){      

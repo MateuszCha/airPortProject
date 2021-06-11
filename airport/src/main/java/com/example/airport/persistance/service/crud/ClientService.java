@@ -15,7 +15,12 @@ public interface ClientService {
     @Transactional
     ClientDto add(ClientDto clientDto);
 
+    @Transactional
     ClientDto remove(Long index);
 
+    @Transactional
+    ClientDto setToRemove(Long index);
+
+    @Transactional
     ClientDto update(ClientDto clientDto);
 }

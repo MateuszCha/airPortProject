@@ -20,4 +20,7 @@ public interface BookedService {
 
     @Transactional
     BookedDto remove(Long index);
+
+    @Transactional
+    BookedDto setToRemove(Long index);
 }

@@ -18,5 +18,9 @@ public interface SeatService {
     @Transactional
     SeatDto update(SeatDto dto, Long planeIndex);
 
+    @Transactional
     SeatDto remove(Long seatIndex);
+
+    @Transactional
+    SeatDto setToRemove(Long seatIndex);
 }

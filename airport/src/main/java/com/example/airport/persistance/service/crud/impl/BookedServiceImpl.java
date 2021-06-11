@@ -4,6 +4,7 @@ import com.example.airport.domain.entity.Booked;
 import com.example.airport.domain.entity.Client;
 import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.to.BookedDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.BookedMapper;
@@ -80,11 +81,11 @@ public class BookedServiceImpl implements BookedService {
         if(doesIndexProperly(seatIndex)){
             Optional<Seat> seat = seatRepository.findById(seatIndex);
             if(seat.isEmpty()){
-                throw new NoFoundEntity("seat on index : " + seatIndex);
+                throw new NoFoundEntity(SeatServiceImpl.INDEX_EXCEPTION_MSG + seatIndex);
             }
             booked.setSeat(seat.get());
         }else{
-            throw new IllegalIndexEntity(" seat index:" + seatIndex);
+            throw new IllegalIndexEntity(SeatServiceImpl.INDEX_EXCEPTION_MSG + seatIndex);
         }
         booked = repository.save(booked);
         return mapper.map2To(booked);
@@ -100,6 +101,7 @@ public class BookedServiceImpl implements BookedService {
         if(booked.isEmpty()){
             throw new NoFoundEntity("index:" + dto.getId());
         }
+        this.doesTheSameVersion(dto.getVersion(),booked.get().getVersion());
         booked.get().setReservationNumber(dto.getReservationNumber());
         booked.get().setPrice(dto.getPrice());
         booked.get().setSoldType(dto.getSoldType());
@@ -108,14 +110,14 @@ public class BookedServiceImpl implements BookedService {
         if(doesIndexProperly(clientIndex)){
             Optional<Client> client = clientRepository.findById(clientIndex);
             if(client.isEmpty()){
-                throw new NoFoundEntity("client index : " + clientIndex);
+                throw new NoFoundEntity(ClientServiceImpl.INDEX_EXCEPTION_MSG + clientIndex);
             }
             booked.get().setClient(client.get());
         }
         if(doesIndexProperly(seatIndex)){
             Optional<Seat> seat = seatRepository.findById(seatIndex);
             if(seat.isEmpty()){
-                throw new NoFoundEntity("seat index : " + seatIndex);
+                throw new NoFoundEntity(ClientServiceImpl.INDEX_EXCEPTION_MSG  + seatIndex);
             }
             booked.get().setSeat(seat.get());
         }
@@ -126,15 +128,30 @@ public class BookedServiceImpl implements BookedService {
     @Override
     public BookedDto remove(Long index) {
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + index);
         }
         Optional<Booked> booked = repository.findById(index);
         if(booked.isEmpty()){
-            throw new NoFoundEntity("entity on index: " + index);
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + index);
         }
         repository.delete(booked.get());
         return mapper.map2To(booked.get());
     }
+
+    @Override
+    public BookedDto setToRemove(Long index) {
+        if(!this.doesIndexProperly(index)){
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + index);
+        }
+        Optional<Booked> booked = repository.findById(index);
+        if(booked.isEmpty()){
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + index);
+        }
+        booked.get().setRemove(true);
+        repository.save(booked.get());
+        return mapper.map2To(booked.get());
+    }
+
     /**
      *  check parameter index is properly. This means that is more than one and object is not null;
      * @param index description index in database
@@ -142,5 +159,10 @@ public class BookedServiceImpl implements BookedService {
      */
     private boolean doesIndexProperly(Long index) {
         return !(Objects.isNull(index) || index < 1);
+    }
+    private void doesTheSameVersion(int versionDto, int versionEntity){
+        if(versionDto != versionEntity) {
+            throw new DifferentVersion("Your version : " + versionDto + " server version : " + versionEntity);
+        }
     }
 }

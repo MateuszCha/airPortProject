@@ -3,6 +3,7 @@ package com.example.airport.persistance.service.crud.impl;
 import com.example.airport.domain.entity.Client;
 import com.example.airport.domain.to.ClientDto;
 import com.example.airport.persistance.exception.BusinessException;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.ClientMapper;
@@ -37,7 +38,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
     @Override
     public ClientDto get(Long index) throws BusinessException {
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + index);
         }
         Optional<Client> client = repository.findById(index);
         if(client.isEmpty()){
@@ -69,7 +70,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
     @Override
     public ClientDto remove(Long index){
         if(!this.doesIndexProperly(index)){
-            throw new IllegalIndexEntity("index:" + index);
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + index);
         }
         Optional<Client> client = repository.findById(index);
         if(client.isEmpty()){
@@ -77,6 +78,21 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         }
         client.get().remove();
         repository.delete(client.get());
+        return mapper.map2To(client.get());
+    }
+
+    @Transactional
+    @Override
+    public ClientDto setToRemove(Long index) {
+        if(!this.doesIndexProperly(index)){
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + index);
+        }
+        Optional<Client> client = repository.findById(index);
+        if(client.isEmpty()){
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + index);
+        }
+        client.get().setRemove(true);
+        repository.save(client.get());
         return mapper.map2To(client.get());
     }
 
@@ -90,6 +106,7 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
         if(client.isEmpty()){
             throw new NoFoundEntity(INDEX_EXCEPTION_MSG + clientDto.getId());
         }
+        this.doesTheSameVersion(clientDto.getVersion(),client.get().getVersion());
         client.get().setFirstName(clientDto.getFirstName());
         client.get().setSurname(clientDto.getSurname());
         client.get().setPhoneNumber(clientDto.getPhoneNumber());
@@ -107,5 +124,9 @@ public class ClientServiceImpl implements AbstractCrudService<Long, ClientDto>, 
     private boolean doesIndexProperly(Long index){
         return !(Objects.isNull(index) || index < 1);
     }
-
+    private void doesTheSameVersion(int versionDto, int versionEntity){
+        if(versionDto != versionEntity) {
+            throw new DifferentVersion("Your version : " + versionDto + " server version : " + versionEntity);
+        }
+    }
 }

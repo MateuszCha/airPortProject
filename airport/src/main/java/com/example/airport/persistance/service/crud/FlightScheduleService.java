@@ -20,4 +20,7 @@ public interface FlightScheduleService {
 
     @Transactional
     FlightScheduleDto remove(Long flightIndex);
+
+    @Transactional
+    FlightScheduleDto setToRemove(Long flightIndex);
 }

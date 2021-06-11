@@ -2,6 +2,7 @@ package com.example.airport.persistance.service;
 
 import com.example.airport.domain.enumeration.DocumentType;
 import com.example.airport.domain.to.ClientDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.service.crud.ClientService;
@@ -13,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -263,6 +265,86 @@ public class ClientServiceImplTest {
         service.add(clientDto2);
         service.update(null);
         //then
+    }
+
+    @Test
+    public void updateShouldChangeVersionWhenUpdateExistObject() {
+        //given
+        ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+        ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+        //when
+        service.add(clientDto1);
+        ClientDto expect = service.add(clientDto2);
+        expect.setSurname("nazwisko");
+        List<ClientDto> beforeUpdate = service.getAll();
+        service.update(expect);
+        List<ClientDto> afterUpdate = service.getAll();
+        ClientDto result = service.get(expect.getId());
+        //then
+        assertNotNull(result);
+        assertEquals(beforeUpdate.size(), afterUpdate.size());
+        this.compareExpectAndResultDtoTest(beforeUpdate.get(0),afterUpdate.get(0));
+        this.compareExpectAndResultDtoTest(afterUpdate.get(1),result);
+        assertEquals(expect.getVersion() + 1, result.getVersion());
+    }
+    @Test(expected = DifferentVersion.class)
+    public void updateShouldThrowExceptionWhenVersionIsDifferent() {
+        //given
+        ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+        ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+        //when
+        service.add(clientDto1);
+        ClientDto expect = service.add(clientDto2);
+        expect.setVersion(23);
+        service.update(expect);
+    }
+    @Test
+    public void setToRemoveShouldSetElementToRemove() {
+        //given
+        ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+        ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+        service.add(clientDto1);
+        service.add(clientDto2);
+        //when
+        service.setToRemove(2L);
+        List<ClientDto> expect = service.getAll();
+        //then
+        assertEquals(2,expect.size());
+        assertEquals(false,expect.get(0).isRemove());
+        assertEquals(true,expect.get(1).isRemove());
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIndexIsLessThanOne() {
+        //given
+        ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+        ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+        service.add(clientDto1);
+        service.add(clientDto2);
+        //when
+        service.setToRemove(0L);
+
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIndexIsLessThanZero() {
+        //given
+        ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+        ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+        service.add(clientDto1);
+        service.add(clientDto2);
+        //when
+        service.setToRemove(-1L);
+
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIEntityNotFound() {
+        //given
+        ClientDto clientDto1 = this.createClientDto(1L,"name1","surnam1","111","email1","xR1#",DocumentType.VISA);
+        ClientDto clientDto2 = this.createClientDto(1L,"name2","surnam2","222","email2","xR2#",DocumentType.ID_CARD);
+        service.add(clientDto1);
+        service.add(clientDto2);
+        //when
+        service.setToRemove(3L);
+
     }
 
     private void checkAllParametersInDtoAndEntityAreNotNull(ClientDto dto){

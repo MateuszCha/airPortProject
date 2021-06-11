@@ -2,6 +2,7 @@ package com.example.airport.persistance.service.crud.impl;
 
 import com.example.airport.domain.entity.Plane;
 import com.example.airport.domain.to.PlaneDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.PlaneMapper;
@@ -75,6 +76,7 @@ public class PlaneServiceImpl implements AbstractCrudService<Long, PlaneDto>, Pl
         if(plane.isEmpty()){
             throw new NoFoundEntity(INDEX_EXCEPTION_MSG + dto.getId());
         }
+        this.doesTheSameVersion(dto.getVersion(),plane.get().getVersion());
         plane.get().setSerialNumber(dto.getSerialNumber());
         plane.get().setNameCarrier(dto.getNameCarrier());
         repository.save(plane.get());
@@ -95,6 +97,21 @@ public class PlaneServiceImpl implements AbstractCrudService<Long, PlaneDto>, Pl
         repository.delete(plane.get());
         return mapper.map2To(plane.get());
     }
+
+    @Override
+    public PlaneDto setToRemove(Long planeIndex) {
+        if(!doesIndexProperly(planeIndex)){
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + planeIndex);
+        }
+        Optional<Plane> plane = repository.findById(planeIndex);
+        if(plane.isEmpty()){
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + planeIndex);
+        }
+        plane.get().setRemove(true);
+        repository.save(plane.get());
+        return mapper.map2To(plane.get());
+    }
+
     /**
      *  check parameter index is properly. This means that is more than one and object is not null;
      * @param index description index in database
@@ -102,5 +119,10 @@ public class PlaneServiceImpl implements AbstractCrudService<Long, PlaneDto>, Pl
      */
     private boolean doesIndexProperly(Long index) {
         return !(Objects.isNull(index) || index < 1);
+    }
+    private void doesTheSameVersion(int versionDto, int versionEntity){
+        if(versionDto != versionEntity) {
+            throw new DifferentVersion("Your version : " + versionDto + " server version : " + versionEntity);
+        }
     }
 }

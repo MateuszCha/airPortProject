@@ -3,6 +3,7 @@ package com.example.airport.persistance.service.crud.impl;
 import com.example.airport.domain.entity.Plane;
 import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.to.SeatDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.mapper.SeatMapper;
@@ -12,6 +13,7 @@ import com.example.airport.persistance.service.crud.SeatService;
 import com.example.airport.persistance.validation.SeatValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -77,7 +79,7 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SeatDto update(SeatDto dto, Long planeIndex) {
         if(!validator.updateValidate(dto)){
             throw new IllegalArgumentException();
@@ -86,6 +88,8 @@ public class SeatServiceImpl implements SeatService {
         if(seat.isEmpty()){
             throw new NoFoundEntity(INDEX_EXCEPTION_MSG + dto.getId());
         }
+        this.doesTheSameVersion(dto.getVersion(),seat.get().getVersion());
+        seat.get().setVersion(dto.getVersion());
         seat.get().setRow(dto.getRow());
         seat.get().setColumn(dto.getColumn());
         seat.get().setCategoryType(dto.getCategoryType());
@@ -118,6 +122,21 @@ public class SeatServiceImpl implements SeatService {
         return mapper.map2To(seat.get());
     }
 
+    @Transactional
+    @Override
+    public SeatDto setToRemove(Long seatIndex){
+        if(!doesIndexProperly(seatIndex)){
+            throw new IllegalIndexEntity(INDEX_EXCEPTION_MSG + seatIndex);
+        }
+        Optional<Seat> seat = repository.findById(seatIndex);
+        if(seat.isEmpty()){
+            throw new NoFoundEntity(INDEX_EXCEPTION_MSG + seatIndex);
+        }
+        seat.get().setRemove(true);
+        repository.save(seat.get());
+        return mapper.map2To(seat.get());
+    }
+
     /**
      *  check parameter index is properly. This means that is more than one and object is not null;
      * @param index description index in database
@@ -125,5 +144,11 @@ public class SeatServiceImpl implements SeatService {
      */
     private boolean doesIndexProperly(Long index){
         return !(Objects.isNull(index) || index < 1);
+    }
+
+    private void doesTheSameVersion(int versionDto, int versionEntity){
+        if(versionDto != versionEntity) {
+            throw new DifferentVersion("Your version : " + versionDto + " server version : " + versionEntity);
+        }
     }
 }

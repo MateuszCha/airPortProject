@@ -5,6 +5,7 @@ import com.example.airport.domain.entity.Plane;
 import com.example.airport.domain.entity.Seat;
 import com.example.airport.domain.enumeration.*;
 import com.example.airport.domain.to.BookedDto;
+import com.example.airport.persistance.exception.DifferentVersion;
 import com.example.airport.persistance.exception.IllegalIndexEntity;
 import com.example.airport.persistance.exception.NoFoundEntity;
 import com.example.airport.persistance.repository.ClientRepository;
@@ -90,6 +91,56 @@ public class BookedServiceImplTest {
         service.add(dto1,1L,2L);
         //then
     }
+    @Test(expected = NoFoundEntity.class)
+    public void addShouldThrowExceptionWhenClientIsNotFound() {
+        //given
+        BookedDto dto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        //when
+        service.add(dto,3L,2L);
+        //then
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void addShouldThrowExceptionWhenSeatIndexIsLessThanOne() {
+        //given
+        BookedDto dto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        //when
+        service.add(dto,1L,0L);
+        //then
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void addShouldThrowExceptionWhenSeatIndexIsNull() {
+        //given
+        BookedDto dto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        //when
+        service.add(dto,1L,null);
+        //then
+    }
+
+    @Test(expected = NoFoundEntity.class)
+    public void addShouldThrowExceptionWhenSeatIsNotFound() {
+        //given
+        BookedDto dto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        //when
+        service.add(dto,3L,16L);
+        //then
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void addShouldThrowExceptionWhenClientIndexIsLessThanOne() {
+        //given
+        BookedDto dto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        //when
+        service.add(dto,0L,2L);
+        //then
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void addShouldThrowExceptionWhenClientIndexIsNull() {
+        //given
+        BookedDto dto = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        //when
+        service.add(dto,null,2L);
+        //then
+    }
+
 
     @Test
     public void getShouldReturnElementOnIndex() {
@@ -292,6 +343,125 @@ public class BookedServiceImplTest {
         service.add(bookedDto2,1L,1L);
         service.update(null,null,null);
         //then
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void updateShouldThrowExceptionWhenNoFoundClient() {
+        //given
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        //when
+        service.add(bookedDto1,1L,2L);
+        BookedDto expect = service.add(bookedDto2,1L,1L);
+        expect.setPrice(9999D);
+        service.update(expect,14L,2L);
+        //then
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void updateShouldThrowExceptionWhenNoFoundSeat() {
+        //given
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        //when
+        service.add(bookedDto1,1L,2L);
+        BookedDto expect = service.add(bookedDto2,1L,1L);
+        expect.setPrice(9999D);
+        service.update(expect,1L,21L);
+        //then
+    }
+
+    @Test
+    public void updateShouldUpdateElementWhenIndexClientAndSeatAreSet() {
+        //given
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        //when
+        service.add(bookedDto1,2L,1L);
+        BookedDto expect = service.add(bookedDto2,1L,1L);
+        expect.setPrice(9999D);
+        BookedDto result = service.update(expect,1L,2L);
+        //then
+        this.compareTwoBookedDto(expect,result);
+        assertEquals(expect.getVersion(),result.getVersion());
+    }
+    @Test
+    public void updateShouldChangeVersionWhenUpdateExistObject() {
+        //given
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        //when
+        service.add(bookedDto1,1L,2L);
+        BookedDto expect = service.add(bookedDto2,2L,2L);
+        expect.setPrice(1.27D);
+        List<BookedDto> beforeUpdate = service.getAll();
+        service.update(expect,null,null);
+        List<BookedDto> afterUpdate = service.getAll();
+        BookedDto result = service.get(expect.getId());
+        //then
+        assertNotNull(result);
+        assertEquals(beforeUpdate.size(), afterUpdate.size());
+        this.compareTwoBookedDto(beforeUpdate.get(0),afterUpdate.get(0));
+        this.compareTwoBookedDto(afterUpdate.get(1),result);
+        assertEquals(expect.getVersion() + 1, result.getVersion());
+    }
+    @Test(expected = DifferentVersion.class)
+    public void updateShouldThrowExceptionWhenVersionIsDifferent() {
+        //given
+        BookedDto bookedDto1 =  this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        //when
+        service.add(bookedDto1,1L,2L);
+        BookedDto expect = service.add(bookedDto2,2L,2L);
+        expect.setVersion(23);
+        service.update(expect,null,null);
+    }
+
+    @Test
+    public void setToRemoveShouldSetElementToRemove() {
+        //given
+        BookedDto bookedDto1 = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        service.add(bookedDto1,1L,2L);
+        service.add(bookedDto2,2L,1L);
+        //when
+        service.setToRemove(2L);
+        List<BookedDto> expect = service.getAll();
+        //then
+        assertEquals(2,expect.size());
+        assertEquals(false,expect.get(0).isRemove());
+        assertEquals(true,expect.get(1).isRemove());
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIndexIsLessThanOne() {
+        //given
+        BookedDto bookedDto1 = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        service.add(bookedDto1,1L,2L);
+        service.add(bookedDto2,2L,1L);
+        //when
+        service.setToRemove(0L);
+
+    }
+    @Test(expected = IllegalIndexEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIndexIsLessThanZero() {
+        //given
+        BookedDto bookedDto1 = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        service.add(bookedDto1,1L,2L);
+        service.add(bookedDto2,2L,1L);
+        //when
+        service.setToRemove(-1L);
+
+    }
+    @Test(expected = NoFoundEntity.class)
+    public void setToRemoveShouldThrowExceptionWhenIEntityNotFound() {
+        //given
+        BookedDto bookedDto1 = this.createBookedDto(1L,1001L,34.0,SoldType.SOLD_AIRPORT,BookedState.SOLD,LocalDateTime.now());
+        BookedDto bookedDto2 = this.createBookedDto(2L,1002L,11.0,SoldType.SOLD_INTERNET,BookedState.RETURNED,LocalDateTime.now().minusHours(10));
+        service.add(bookedDto1,1L,2L);
+        service.add(bookedDto2,2L,1L);
+        //when
+        service.setToRemove(3L);
+
     }
 
 
