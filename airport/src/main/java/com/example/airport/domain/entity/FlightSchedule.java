@@ -1,5 +1,6 @@
 package com.example.airport.domain.entity;
 
+import com.example.airport.domain.entity.query.QueryName;
 import com.example.airport.domain.enumeration.FlyType;
 
 import javax.persistence.*;
@@ -7,11 +8,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-
+@NamedQueries({
+        @NamedQuery(name = QueryName.GET_SCHEDULE_TO_REMOVE,
+                query = "SELECT sch FROM FlightSchedule AS sch " +
+                        "WHERE sch.isRemove = true AND sch.updateTime <= :earlieDays")
+})
 @Entity
 @Table(name = "flight_schedule")
-public class FlightSchedule  implements Serializable {
-
+public class FlightSchedule extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

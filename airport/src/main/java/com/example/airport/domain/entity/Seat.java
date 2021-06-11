@@ -1,5 +1,6 @@
 package com.example.airport.domain.entity;
 
+import com.example.airport.domain.entity.query.QueryName;
 import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.CategoryType;
 import com.example.airport.domain.enumeration.SeatPosition;
@@ -8,10 +9,14 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
-
+@NamedQueries({
+        @NamedQuery(name = QueryName.GET_SEAT_TO_REMOVE,
+                query = "SELECT s FROM Seat AS s " +
+                "WHERE s.isRemove = true AND s.updateTime <= :earlieDays")
+})
 @Entity
 @Table(name = "seat")
-public class Seat  implements Serializable {
+public class Seat extends AbstractEntity  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

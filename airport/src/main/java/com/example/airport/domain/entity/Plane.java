@@ -1,14 +1,20 @@
 package com.example.airport.domain.entity;
 
 
+import com.example.airport.domain.entity.query.QueryName;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
-
+@NamedQueries({
+        @NamedQuery(name = QueryName.GET_PLANE_TO_REMOVE,
+                query = "SELECT p FROM Plane AS p " +
+                        "WHERE p.isRemove = true AND p.updateTime <= :earlieDays")
+})
 @Entity
 @Table(name = "plane")
-public class Plane implements Serializable {
+public class Plane extends AbstractEntity  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

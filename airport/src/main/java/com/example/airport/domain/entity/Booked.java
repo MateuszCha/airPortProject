@@ -1,5 +1,6 @@
 package com.example.airport.domain.entity;
 
+import com.example.airport.domain.entity.query.QueryName;
 import com.example.airport.domain.enumeration.BookedState;
 import com.example.airport.domain.enumeration.SoldType;
 
@@ -8,10 +9,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-
+@NamedQueries({
+        @NamedQuery(name = QueryName.GET_BOOKED_TO_REMOVE,
+                query = "SELECT b FROM Booked AS b " +
+                        "WHERE b.isRemove = true AND b.updateTime <= :earlieDays")
+})
 @Entity
 @Table(name = "Booked")
-public class Booked  implements Serializable {
+public class Booked extends AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

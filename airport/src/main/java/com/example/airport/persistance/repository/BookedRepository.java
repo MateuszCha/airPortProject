@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface BookedRepository extends JpaRepository<Booked,Long> {
+public interface BookedRepository extends JpaRepository<Booked,Long>, BookedDao {
 
 }
